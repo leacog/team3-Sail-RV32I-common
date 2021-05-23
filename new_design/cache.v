@@ -38,7 +38,7 @@
 
 //Data cache
 
-module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, read_data,inst_out,led, clk_stall);
+module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, read_data,inst_out,led, clk_stall);
 	input			clk;
 	input [31:0]    inst_addr;
 	input [31:0]		addr;
@@ -105,7 +105,8 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 	 *
 	 *	(Bad practice: The constant for the size should be a `define).
 	 */
-	reg [31:0]		data_block[0:5120-1];
+	reg [31:0]		data_block[0:1023];
+	reg [31:0]		instruction_memory[0:2**12-1];
 
 	/*
 	 *	wire assignments
@@ -132,55 +133,51 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 	assign 			buf3	= word_buf[31:24];
 
 	/*
-	 *	Byte select decoder
-	 */
-	wire bdec_sig0;
-	wire bdec_sig1;
-	wire bdec_sig2;
-	wire bdec_sig3;
-
-	assign bdec_sig0 = (~addr_buf_byte_offset[1]) & (~addr_buf_byte_offset[0]);
-	assign bdec_sig1 = (~addr_buf_byte_offset[1]) & (addr_buf_byte_offset[0]);
-	assign bdec_sig2 = (addr_buf_byte_offset[1]) & (~addr_buf_byte_offset[0]);
-	assign bdec_sig3 = (addr_buf_byte_offset[1]) & (addr_buf_byte_offset[0]);
-
-
-	/*
 	 *	Constructing the word to be replaced for write byte
 	 */
-	wire[7:0] byte_r0;
-	wire[7:0] byte_r1;
-	wire[7:0] byte_r2;
-	wire[7:0] byte_r3;
- 
-	assign byte_r0 = (bdec_sig0==1'b1) ? write_data_buffer[7:0] : buf0;
-	assign byte_r1 = (bdec_sig1==1'b1) ? write_data_buffer[7:0] : buf1;
-	assign byte_r2 = (bdec_sig2==1'b1) ? write_data_buffer[7:0] : buf2;
-	assign byte_r3 = (bdec_sig3==1'b1) ? write_data_buffer[7:0] : buf3;
 
-	/*
-	 *	For write halfword
-	 */
-	wire[15:0] halfword_r0;
-	wire[15:0] halfword_r1;
+	always @(*) begin
+		case(sign_mask_buf[2:0])
+			3'b001: begin //Byte
+				case(addr_buf_byte_offset)
+					2'b00: begin
+						replacement_word = {write_data_buffer[7:0],buf1,buf2,buf3};
+					end
+					2'b01: begin
+						replacement_word = {buf0,write_data_buffer[7:0],buf2,buf3};
+					end
+					2'b10: begin
+						replacement_word = {buf0,buf1,write_data_buffer[7:0],buf3};
+					end
+					2'b11: begin
+						replacement_word = {buf0,buf1,buf3,write_data_buffer[7:0]};
+					end
+				endcase
+			end
+			
+			3'b011: begin //Halfword
+				case(addr_buf_byte_offset[1])
+					1'b0: begin
+						replacement_word = {buf3, buf2,write_data_buffer[15:0]};
+					end
+					1'b1: begin
+						replacement_word = {write_data_buffer[15:0],buf1, buf0};
+					end
+				endcase
+			end
+			
+			3'b111: begin //Word
+				replacement_word = 	write_data_buffer;
+			end
+			
+			default: begin
+				//do nothing
+			end
+		endcase
+	end
 
-	assign halfword_r0 = (addr_buf_byte_offset[1]==1'b1) ? {buf1, buf0} : write_data_buffer[15:0];
-	assign halfword_r1 = (addr_buf_byte_offset[1]==1'b1) ? write_data_buffer[15:0] : {buf3, buf2};
 
-	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0] */
-	wire write_select0;
-	wire write_select1;
-	
-	wire[31:0] write_out1;
-	wire[31:0] write_out2;
-	
-	assign write_select0 = ~sign_mask_buf[2] & sign_mask_buf[1];
-	assign write_select1 = sign_mask_buf[2];
-	
-	assign write_out1 = (write_select0) ? {halfword_r1, halfword_r0} : {byte_r3, byte_r2, byte_r1, byte_r0};
-	assign write_out2 = (write_select0) ? 32'b0 : write_data_buffer;
-	
-	assign replacement_word = (write_select1) ? write_out2 : write_out1;
+
 	/*
 	 *	Combinational logic for generating 32-bit read data
 	 */
@@ -224,7 +221,7 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 	 */
 	initial begin
 		$readmemh("verilog/program.hex",data_block);
-		$readmemh("verilog/data.hex", data_block,2**12);
+		$readmemh("verilog/data.hex", data_block,2**12-1);
 		clk_stall = 0;
 	end
 
@@ -261,7 +258,7 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				word_buf <= data_block[addr_buf_block_addr];
+				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
 				if(memread_buf==1'b1) begin
 					state <= READ;
 				end
@@ -283,14 +280,14 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				data_block[addr_buf_block_addr] <= replacement_word;
+				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
 				state <= IDLE;
 			end
 
 		endcase
 	end
 
-	assign inst_out = data_block[inst_addr];
+	assign inst_out = instruction_memory[inst_addr];
 
 	/*
 	 *	Test led

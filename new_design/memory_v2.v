@@ -105,8 +105,7 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 	 *
 	 *	(Bad practice: The constant for the size should be a `define).
 	 */
-	reg [31:0]		data_block[0:1023];
-	reg [31:0]		instruction_memory[0:2**12-1];
+	reg [31:0]		data_block[0:5120-1];
 
 	/*
 	 *	wire assignments
@@ -225,7 +224,7 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 	 */
 	initial begin
 		$readmemh("verilog/program.hex",data_block);
-		$readmemh("verilog/data.hex", data_block,2**12-1);
+		$readmemh("verilog/data.hex", data_block,2**12);
 		clk_stall = 0;
 	end
 
@@ -262,7 +261,7 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
+				word_buf <= data_block[addr_buf_block_addr];
 				if(memread_buf==1'b1) begin
 					state <= READ;
 				end
@@ -284,14 +283,14 @@ module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, re
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
+				data_block[addr_buf_block_addr] <= replacement_word;
 				state <= IDLE;
 			end
 
 		endcase
 	end
 
-	assign inst_out = instruction_memory[inst_addr];
+	assign inst_out = data_block[inst_addr];
 
 	/*
 	 *	Test led

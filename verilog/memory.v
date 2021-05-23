@@ -38,7 +38,7 @@
 
 //Data cache
 
-module data_mem (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, read_data,inst_out,led, clk_stall);
+module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, read_data,inst_out,led, clk_stall);
 	input			clk;
 	input [31:0]    inst_addr;
 	input [31:0]		addr;

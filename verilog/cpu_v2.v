@@ -42,7 +42,7 @@
 
 
 
-module cpu(
+module cpu_v2(
 			clk,
 			inst_mem_in,
 			inst_mem_out,

@@ -88,8 +88,8 @@ module top (led);
 
 	memory mem_inst(
 			.clk(clk),
-			.inst_addr(inst_in)
-			.inst_out(inst_out)
+			.inst_addr(inst_in),
+			.inst_out(inst_out),
 			.addr(data_addr),
 			.write_data(data_WrData),
 			.memwrite(data_memwrite), 

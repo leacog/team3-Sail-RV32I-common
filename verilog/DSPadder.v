@@ -83,25 +83,25 @@ module DSPadder(input1, input2, out);
 		);
 		
 		// Set the instance parameters to define operation of DSP
-		defparam i_sbmac16. B_SIGNED = 1'b0 ; 								// Don't care - only applies for mutliplication operation
-		defparam i_sbmac16. A_SIGNED = 1'b0 ;									// --||--
-		defparam i_sbmac16. MODE_8x8 = 1'b1 ; 								// Apparently reduced power, shouldn't affect operations since multipliers are bypassed in addition mode
-		defparam i_sbmac16. BOTADDSUB_CARRYSELECT = 2'b00 ; 	// Constant zero on the carry input for lower adder
-		defparam i_sbmac16. BOTADDSUB_UPPERINPUT = 1'b1 ;			// Connects D to Y (upper input)
-		defparam i_sbmac16. BOTADDSUB_LOWERINPUT = 2'b00 ;  	// Connects B to Z (lower input)
-		defparam i_sbmac16. BOTOUTPUT_SELECT = 2'b00 ;				// Connects output of adder directly to Lo output
-		defparam i_sbmac16. TOPADDSUB_CARRYSELECT = 2'b10 ; 	// Connects carry out from lower adder to upper adder, 11 should work aswell but higher prop delay?
-		defparam i_sbmac16. TOPADDSUB_UPPERINPUT = 1'b1 ;  		// Connects C to W (upper input)
-		defparam i_sbmac16. TOPADDSUB_LOWERINPUT = 2'b10 ; 		// Connects A to X (lower input)
-		defparam i_sbmac16. TOPOUTPUT_SELECT = 2'b00 ;				// Connects output of adder directly to Hi output
-		defparam i_sbmac16. PIPELINE_16x16_MULT_REG2 = 1'b0 ; // Dont care since multiplier not connected
-		defparam i_sbmac16. PIPELINE_16x16_MULT_REG1 = 1'b1 ; // --||--
-		defparam i_sbmac16. BOT_8x8_MULT_REG = 1'b1 ;					// --||--
-		defparam i_sbmac16. TOP_8x8_MULT_REG = 1'b1 ;					// --||--
-		defparam i_sbmac16. D_REG = 1'b0 ;										// Bypasses all input registers for asynchronus operation
-		defparam i_sbmac16. B_REG = 1'b0 ;										// --||--
-		defparam i_sbmac16. A_REG = 1'b0 ;										// --||--
-		defparam i_sbmac16. C_REG = 1'b0 ;										// --||--
+		defparam i_sbmac16.B_SIGNED = 1'b0 ; 								// Don't care - only applies for mutliplication operation
+		defparam i_sbmac16.A_SIGNED = 1'b0 ;									// --||--
+		defparam i_sbmac16.MODE_8x8 = 1'b1 ; 								// Apparently reduced power, shouldn't affect operations since multipliers are bypassed in addition mode
+		defparam i_sbmac16.BOTADDSUB_CARRYSELECT = 2'b00 ; 	// Constant zero on the carry input for lower adder
+		defparam i_sbmac16.BOTADDSUB_UPPERINPUT = 1'b1 ;			// Connects D to Y (upper input)
+		defparam i_sbmac16.BOTADDSUB_LOWERINPUT = 2'b00 ;  	// Connects B to Z (lower input)
+		defparam i_sbmac16.BOTOUTPUT_SELECT = 2'b00 ;				// Connects output of adder directly to Lo output
+		defparam i_sbmac16.TOPADDSUB_CARRYSELECT = 2'b10 ; 	// Connects carry out from lower adder to upper adder, 11 should work aswell but higher prop delay?
+		defparam i_sbmac16.TOPADDSUB_UPPERINPUT = 1'b1 ;  		// Connects C to W (upper input)
+		defparam i_sbmac16.TOPADDSUB_LOWERINPUT = 2'b10 ; 		// Connects A to X (lower input)
+		defparam i_sbmac16.TOPOUTPUT_SELECT = 2'b00 ;				// Connects output of adder directly to Hi output
+		defparam i_sbmac16.PIPELINE_16x16_MULT_REG2 = 1'b0 ; // Dont care since multiplier not connected
+		defparam i_sbmac16.PIPELINE_16x16_MULT_REG1 = 1'b1 ; // --||--
+		defparam i_sbmac16.BOT_8x8_MULT_REG = 1'b1 ;					// --||--
+		defparam i_sbmac16.TOP_8x8_MULT_REG = 1'b1 ;					// --||--
+		defparam i_sbmac16.D_REG = 1'b0 ;										// Bypasses all input registers for asynchronus operation
+		defparam i_sbmac16.B_REG = 1'b0 ;										// --||--
+		defparam i_sbmac16.A_REG = 1'b0 ;										// --||--
+		defparam i_sbmac16.C_REG = 1'b0 ;										// --||--
 
 	//assign		out = input1 + input2; - Not needed anymore, handled by the DSP
 endmodule

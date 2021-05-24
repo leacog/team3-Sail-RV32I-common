@@ -118,7 +118,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 		.DATAIN(datain[31:16]),
 		.ADDRESS(addr_buf_block_addr),
 		.MASKWREN(sp_mask),
-		.WREN(writen)
+		.WREN(writen),
 		.CHIPSELECT(1'b1),
 		.CLOCK(clk),
 		.DATAOUT(dataout[31:16])

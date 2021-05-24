@@ -106,7 +106,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 *	(Bad practice: The constant for the size should be a `define).
 	 */
 	reg [31:0]		instruction_memory[0:2**12-1];
-
+	wire [9:0]		addr_buf_block_addr;
 	wire [31:0]     datain;
 	wire [3:0]		sp_mask;
 	wire [13:0]     sp_addr;
@@ -135,13 +135,13 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	/*
 	 *	wire assignments
 	 */
-	wire [9:0]		addr_buf_block_addr;
+	
 	wire [1:0]		addr_buf_byte_offset;
 	
 	reg [31:0]		replacement_word;
 
 	assign			writen = memwrite_buf;
-	assign			addr_buf_block_addr	= addr[11:2] - 32'h1000;
+	assign			addr_buf_block_addr	= addr[11:2];
 	assign			addr_buf_byte_offset	= addr_buf[1:0];
 
 	
@@ -230,8 +230,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 *	modules in the design.
 	 */
 	initial begin
-		$readmemh("verilog/program.hex",instruction_memory);
-		$readmemh("verilog/data.hex", data_block);
+		//$readmemh("verilog/program.hex",instruction_memory);
+		//$readmemh("verilog/data.hex", data_block);
 		clk_stall = 0;
 	end
 

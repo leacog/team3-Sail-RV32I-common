@@ -182,33 +182,49 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 *	Combinational logic for generating 32-bit read data
 	 */
 	
-	wire select0;
-	wire select1;
-	wire select2;
-	
-	wire[31:0] out1;
-	wire[31:0] out2;
-	wire[31:0] out3;
-	wire[31:0] out4;
-	wire[31:0] out5;
-	wire[31:0] out6;
+
 	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0]
 	 * d is addr_buf_byte_offset[1], e is addr_buf_byte_offset[0]
 	 */
-	
-	assign select0 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & ~addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & sign_mask_buf[1] & addr_buf_byte_offset[1]); //~a~b~de + ~ade + ~abd
-	assign select1 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & addr_buf_byte_offset[1]) | (sign_mask_buf[2] & sign_mask_buf[1]); // ~a~bd + ab
-	assign select2 = sign_mask_buf[1]; //b
-	
-	assign out1 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf1[7]}}, buf1} : {24'b0, buf1}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf0[7]}}, buf0} : {24'b0, buf0});
-	assign out2 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf3[7]}}, buf3} : {24'b0, buf3}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf2[7]}}, buf2} : {24'b0, buf2}); 
-	assign out3 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{16{buf3[7]}}, buf3, buf2} : {16'b0, buf3, buf2}) : ((sign_mask_buf[3]==1'b1) ? {{16{buf1[7]}}, buf1, buf0} : {16'b0, buf1, buf0});
-	assign out4 = (select0) ? 32'b0 : {buf3, buf2, buf1, buf0};
-	
-	assign out5 = (select1) ? out2 : out1;
-	assign out6 = (select1) ? out4 : out3;
-	
-	assign read_buf = (select2) ? out6 : out5;
+	always @(*) begin
+		case(sign_mask_buf[2:0])
+			3'b001: begin //Byte
+				case(addr_buf_byte_offset)
+					2'b00: begin
+						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf0[7]}}, buf0}:{24'b0, buf0};
+					end
+					2'b01: begin
+						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf1[7]}}, buf1}:{24'b0, buf1};
+					end
+					2'b10: begin
+						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf2[7]}}, buf2}:{24'b0, buf2};
+					end
+					2'b11: begin
+						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf3[7]}}, buf3}:{24'b0, buf3};
+					end
+				endcase
+			end
+			
+			3'b011: begin //Halfword
+				case(addr_buf_byte_offset[1])
+					1'b0: begin
+						read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf1[7]}}, buf1, buf0}:{16'b0, buf1, buf0};
+					end
+					1'b1: begin
+						read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf3[7]}}, buf3, buf2}:{16'b0, buf3, buf2};
+					end
+				endcase
+			end
+			
+			3'b111: begin //Word
+				read_buf = {buf3, buf2, buf1, buf0};
+			end
+			
+			default: begin
+				//do nothing
+			end
+		endcase
+	end
 	
 	/*
 	 *	This uses Yosys's support for nonzero initial values:

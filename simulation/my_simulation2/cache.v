@@ -108,7 +108,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	reg [31:0]		instruction_memory[0:2**12-1];
 	wire [9:0]		addr_buf_block_addr;
 	wire [31:0]     datain;
-	wire [3:0]		sp_mask;
+	wire [3:0]		sp_mask1;
+	wire [3:0]		sp_mask2;
 	wire [13:0]     sp_addr;
 	wire [31:0]		dataout;
 	wire			writen;
@@ -116,7 +117,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	SB_SPRAM256KA mem_up(
 		.DATAIN(datain[31:16]),
 		.ADDRESS(addr_buf_block_addr),
-		.MASKWREN(sp_mask),
+		.MASKWREN(sp_mask1),
 		.WREN(writen),
 		.CHIPSELECT(1'b1),
 		.CLOCK(clk),
@@ -125,7 +126,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	SB_SPRAM256KA mem_low(
 		.DATAIN(datain[15:0]),
 		.ADDRESS(addr_buf_block_addr),
-		.MASKWREN(sp_mask),
+		.MASKWREN(sp_mask2),
 		.WREN(writen),
 		.CHIPSELECT(1'b1),
 		.CLOCK(clk),
@@ -186,7 +187,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	assign byte_r3 = (bdec_sig0==1'b1) ? write_data[31:24] : 8'b00;
 
 	assign datain = {byte_r3,byte_r2,byte_r1,byte_r0};
-	assign sp_mask ={{2{sign_mask_buf[2]}},sign_mask_buf[1:0]};
+	assign sp_mask1 ={4{sign_mask_buf[2]}};
+	assign sp_mask2 ={{2{sign_mask_buf[1]}},{2{sign_mask_buf[0]}};};
 
 	/*
 	 *	Combinational logic for generating 32-bit read data

@@ -141,7 +141,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	reg [31:0]		replacement_word;
 
 	assign			writen = memwrite_buf;
-	assign			addr_buf_block_addr	= addr[11:2];
+	assign			addr_buf_block_addr	= addr_buf[11:2];
 	assign			addr_buf_byte_offset	= addr_buf[1:0];
 
 	

@@ -77,7 +77,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	/*
 	 *	Read buffer
 	 */
-	reg [31:0]		read_buf;
+	wire [31:0]		read_buf;
 
 	/*
 	 *	Buffer to identify read or write operation

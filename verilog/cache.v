@@ -186,8 +186,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	assign byte_r2 = (bdec_sig2==1'b1) ? write_data[7:0] : 8'b00;
 	assign byte_r3 = (bdec_sig3==1'b1) ? write_data[7:0] : 8'b00;
 
-	assign datain = {byte_r0,byte_r1,byte_r2,byte_r3}
-	assign sp_mask ={{2{sign_mask_buf[2]}},sign_mask_buf[1:0]}
+	assign datain = {byte_r0,byte_r1,byte_r2,byte_r3};
+	assign sp_mask ={{2{sign_mask_buf[2]}},sign_mask_buf[1:0]};
 
 	/*
 	 *	Combinational logic for generating 32-bit read data

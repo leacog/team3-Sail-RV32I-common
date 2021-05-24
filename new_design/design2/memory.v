@@ -38,7 +38,7 @@
 
 //Data cache
 
-module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, read_data,inst_out,led, clk_stall);
+module memory (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, read_data,inst_out,led, clk_stall);
 	input			clk;
 	input [31:0]    inst_addr;
 	input [31:0]		addr;
@@ -77,7 +77,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	/*
 	 *	Read buffer
 	 */
-	reg [31:0]		read_buf;
+	wire [31:0]		read_buf;
 
 	/*
 	 *	Buffer to identify read or write operation
@@ -108,44 +108,17 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	reg [31:0]		data_block[0:1023];
 	reg [31:0]		instruction_memory[0:2**12-1];
 
-	wire [31:0]     datain;
-	wire [3:0]		sp_mask;
-	wire [13:0]     sp_addr;
-	wire [31:0]		dataout;
-	wire			writen;
-
-	SB_SPRAM256KA mem_up(
-		.DATAIN(datain[31:16]),
-		.ADDRESS(addr_buf_block_addr),
-		.MASKWREN(sp_mask),
-		.WREN(writen)
-		.CHIPSELECT(1'b1),
-		.CLOCK(clk),
-		.DATAOUT(dataout[31:16])
-	);
-	SB_SPRAM256KA mem_low(
-		.DATAIN(datain[15:0]),
-		.ADDRESS(addr_buf_block_addr),
-		.MASKWREN(sp_mask),
-		.WREN(writen),
-		.CHIPSELECT(1'b1),
-		.CLOCK(clk),
-		.DATAOUT(dataout[15:0])
-	);
-
 	/*
 	 *	wire assignments
 	 */
 	wire [9:0]		addr_buf_block_addr;
 	wire [1:0]		addr_buf_byte_offset;
 	
-	reg [31:0]		replacement_word;
+	wire [31:0]		replacement_word;
 
-	assign			writen = memwrite_buf;
-	assign			addr_buf_block_addr	= addr[11:2] - 32'h1000;
+	assign			addr_buf_block_addr	= addr_buf[11:2];
 	assign			addr_buf_byte_offset	= addr_buf[1:0];
 
-	
 	/*
 	 *	Regs for multiplexer output
 	 */
@@ -181,14 +154,34 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	wire[7:0] byte_r2;
 	wire[7:0] byte_r3;
  
-	assign byte_r0 = (bdec_sig0==1'b1) ? write_data[7:0] : 8'b00;
-	assign byte_r1 = (bdec_sig1==1'b1) ? write_data[7:0] : 8'b00;
-	assign byte_r2 = (bdec_sig2==1'b1) ? write_data[7:0] : 8'b00;
-	assign byte_r3 = (bdec_sig3==1'b1) ? write_data[7:0] : 8'b00;
+	assign byte_r0 = (bdec_sig0==1'b1) ? write_data_buffer[7:0] : buf0;
+	assign byte_r1 = (bdec_sig1==1'b1) ? write_data_buffer[7:0] : buf1;
+	assign byte_r2 = (bdec_sig2==1'b1) ? write_data_buffer[7:0] : buf2;
+	assign byte_r3 = (bdec_sig3==1'b1) ? write_data_buffer[7:0] : buf3;
 
-	assign datain = {byte_r0,byte_r1,byte_r2,byte_r3}
-	assign sp_mask ={2{sign_mask_buf[2]},sign_mask_buf[1:0]}
+	/*
+	 *	For write halfword
+	 */
+	wire[15:0] halfword_r0;
+	wire[15:0] halfword_r1;
 
+	assign halfword_r0 = (addr_buf_byte_offset[1]==1'b1) ? {buf1, buf0} : write_data_buffer[15:0];
+	assign halfword_r1 = (addr_buf_byte_offset[1]==1'b1) ? write_data_buffer[15:0] : {buf3, buf2};
+
+	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0] */
+	wire write_select0;
+	wire write_select1;
+	
+	wire[31:0] write_out1;
+	wire[31:0] write_out2;
+	
+	assign write_select0 = ~sign_mask_buf[2] & sign_mask_buf[1];
+	assign write_select1 = sign_mask_buf[2];
+	
+	assign write_out1 = (write_select0) ? {halfword_r1, halfword_r0} : {byte_r3, byte_r2, byte_r1, byte_r0};
+	assign write_out2 = (write_select0) ? 32'b0 : write_data_buffer;
+	
+	assign replacement_word = (write_select1) ? write_out2 : write_out1;
 	/*
 	 *	Combinational logic for generating 32-bit read data
 	 */
@@ -231,8 +224,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 *	modules in the design.
 	 */
 	initial begin
-		$readmemh("verilog/program.hex",instruction_memory);
-		$readmemh("verilog/data.hex", data_block);
+		$readmemh("verilog/program.hex",data_block);
+		$readmemh("verilog/data.hex", data_block,2**12-1);
 		clk_stall = 0;
 	end
 
@@ -269,7 +262,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				word_buf <= dataout;
+				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
 				if(memread_buf==1'b1) begin
 					state <= READ;
 				end
@@ -291,6 +284,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
+				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
 				state <= IDLE;
 			end
 

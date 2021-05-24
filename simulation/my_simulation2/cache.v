@@ -188,7 +188,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 
 	assign datain = {byte_r3,byte_r2,byte_r1,byte_r0};
 	assign sp_mask1 ={4{sign_mask_buf[2]}};
-	assign sp_mask2 ={{2{sign_mask_buf[1]}},{2{sign_mask_buf[0]}};};
+	assign sp_mask2 ={{2{sign_mask_buf[1]}},{2{sign_mask_buf[0]}}};
 
 	/*
 	 *	Combinational logic for generating 32-bit read data

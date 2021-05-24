@@ -132,6 +132,14 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	assign 			buf2	= word_buf[23:16];
 	assign 			buf3	= word_buf[31:24];
 
+	wire[7:0]	byteword	
+	
+	assign		byteword	=write_data_buffer[7:0];
+	
+	wire[15:0]	halfword;
+
+	assign		halfword	=write_data_buffer[15:0];
+
 	/*
 	 *	Constructing the word to be replaced for write byte
 	 */
@@ -141,16 +149,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b001: begin //Byte
 				case(addr_buf_byte_offset)
 					2'b00: begin
-						 replacement_word = {write_data_buffer[7:0],buf1,buf2,buf3};
+						 replacement_word = {byteword,buf1,buf2,buf3};
 					end
 					2'b01: begin
-						 replacement_word = {buf0,write_data_buffer[7:0],buf2,buf3};
+						 replacement_word = {buf0,byteword,buf2,buf3};
 					end
 					2'b10: begin
-						 replacement_word = {buf0,buf1,write_data_buffer[7:0],buf3};
+						 replacement_word = {buf0,buf1,byteword,buf3};
 					end
 					2'b11: begin
-						 replacement_word = {buf0,buf1,buf3,write_data_buffer[7:0]};
+						 replacement_word = {buf0,buf1,buf3,byteword};
 					end
 				endcase
 			end
@@ -158,10 +166,10 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b011: begin //Halfword
 				case(addr_buf_byte_offset[1])
 					1'b0: begin
-						 replacement_word = {buf3, buf2,write_data_buffer[15:0]};
+						 replacement_word = {buf3, buf2,halfword};
 					end
 					1'b1: begin
-						 replacement_word = {write_data_buffer[15:0],buf1, buf0};
+						 replacement_word = {halfword,buf1, buf0};
 					end
 				endcase
 			end

@@ -77,7 +77,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	/*
 	 *	Read buffer
 	 */
-	wire [31:0]		read_buf;
+	reg [31:0]		read_buf;
 
 	/*
 	 *	Buffer to identify read or write operation
@@ -114,7 +114,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	wire [9:0]		addr_buf_block_addr;
 	wire [1:0]		addr_buf_byte_offset;
 	
-	wire [31:0]		replacement_word;
+	reg [31:0]		replacement_word;
 
 	assign			addr_buf_block_addr	= addr_buf[11:2];
 	assign			addr_buf_byte_offset	= addr_buf[1:0];
@@ -141,16 +141,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b001: begin //Byte
 				case(addr_buf_byte_offset)
 					2'b00: begin
-						assign replacement_word = {write_data_buffer[7:0],buf1,buf2,buf3};
+						 replacement_word = {write_data_buffer[7:0],buf1,buf2,buf3};
 					end
 					2'b01: begin
-						assign replacement_word = {buf0,write_data_buffer[7:0],buf2,buf3};
+						 replacement_word = {buf0,write_data_buffer[7:0],buf2,buf3};
 					end
 					2'b10: begin
-						assign replacement_word = {buf0,buf1,write_data_buffer[7:0],buf3};
+						 replacement_word = {buf0,buf1,write_data_buffer[7:0],buf3};
 					end
 					2'b11: begin
-						assign replacement_word = {buf0,buf1,buf3,write_data_buffer[7:0]};
+						 replacement_word = {buf0,buf1,buf3,write_data_buffer[7:0]};
 					end
 				endcase
 			end
@@ -158,16 +158,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b011: begin //Halfword
 				case(addr_buf_byte_offset[1])
 					1'b0: begin
-						assign replacement_word = {buf3, buf2,write_data_buffer[15:0]};
+						 replacement_word = {buf3, buf2,write_data_buffer[15:0]};
 					end
 					1'b1: begin
-						assign replacement_word = {write_data_buffer[15:0],buf1, buf0};
+						 replacement_word = {write_data_buffer[15:0],buf1, buf0};
 					end
 				endcase
 			end
 			
 			3'b111: begin //Word
-				assign replacement_word = 	write_data_buffer;
+				 replacement_word = 	write_data_buffer;
 			end
 			
 			default: begin

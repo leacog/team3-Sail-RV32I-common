@@ -141,16 +141,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b001: begin //Byte
 				case(addr_buf_byte_offset)
 					2'b00: begin
-						replacement_word = {write_data_buffer[7:0],buf1,buf2,buf3};
+						assign replacement_word = {write_data_buffer[7:0],buf1,buf2,buf3};
 					end
 					2'b01: begin
-						replacement_word = {buf0,write_data_buffer[7:0],buf2,buf3};
+						assign replacement_word = {buf0,write_data_buffer[7:0],buf2,buf3};
 					end
 					2'b10: begin
-						replacement_word = {buf0,buf1,write_data_buffer[7:0],buf3};
+						assign replacement_word = {buf0,buf1,write_data_buffer[7:0],buf3};
 					end
 					2'b11: begin
-						replacement_word = {buf0,buf1,buf3,write_data_buffer[7:0]};
+						assign replacement_word = {buf0,buf1,buf3,write_data_buffer[7:0]};
 					end
 				endcase
 			end
@@ -158,16 +158,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b011: begin //Halfword
 				case(addr_buf_byte_offset[1])
 					1'b0: begin
-						replacement_word = {buf3, buf2,write_data_buffer[15:0]};
+						assign replacement_word = {buf3, buf2,write_data_buffer[15:0]};
 					end
 					1'b1: begin
-						replacement_word = {write_data_buffer[15:0],buf1, buf0};
+						assign replacement_word = {write_data_buffer[15:0],buf1, buf0};
 					end
 				endcase
 			end
 			
 			3'b111: begin //Word
-				replacement_word = 	write_data_buffer;
+				assign replacement_word = 	write_data_buffer;
 			end
 			
 			default: begin
@@ -191,16 +191,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b001: begin //Byte
 				case(addr_buf_byte_offset)
 					2'b00: begin
-						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf0[7]}}, buf0}:{24'b0, buf0};
+						assign read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf0[7]}}, buf0}:{24'b0, buf0};
 					end
 					2'b01: begin
-						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf1[7]}}, buf1}:{24'b0, buf1};
+						assign read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf1[7]}}, buf1}:{24'b0, buf1};
 					end
 					2'b10: begin
-						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf2[7]}}, buf2}:{24'b0, buf2};
+						assign read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf2[7]}}, buf2}:{24'b0, buf2};
 					end
 					2'b11: begin
-						read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf3[7]}}, buf3}:{24'b0, buf3};
+						assign read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf3[7]}}, buf3}:{24'b0, buf3};
 					end
 				endcase
 			end
@@ -208,16 +208,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b011: begin //Halfword
 				case(addr_buf_byte_offset[1])
 					1'b0: begin
-						read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf1[7]}}, buf1, buf0}:{16'b0, buf1, buf0};
+						assign read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf1[7]}}, buf1, buf0}:{16'b0, buf1, buf0};
 					end
 					1'b1: begin
-						read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf3[7]}}, buf3, buf2}:{16'b0, buf3, buf2};
+						assign read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf3[7]}}, buf3, buf2}:{16'b0, buf3, buf2};
 					end
 				endcase
 			end
 			
 			3'b111: begin //Word
-				read_buf = {buf3, buf2, buf1, buf0};
+				assign read_buf = {buf3, buf2, buf1, buf0};
 			end
 			
 			default: begin

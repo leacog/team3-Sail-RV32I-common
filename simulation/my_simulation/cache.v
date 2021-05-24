@@ -132,7 +132,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	assign 			buf2	= word_buf[23:16];
 	assign 			buf3	= word_buf[31:24];
 
-	wire[7:0]	byteword	
+	wire[7:0]	byteword;	
 	
 	assign		byteword	=write_data_buffer[7:0];
 	

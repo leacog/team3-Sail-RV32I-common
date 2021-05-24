@@ -105,7 +105,6 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 *
 	 *	(Bad practice: The constant for the size should be a `define).
 	 */
-	reg [31:0]		data_block[0:1023];
 	reg [31:0]		instruction_memory[0:2**12-1];
 
 	wire [31:0]     datain;

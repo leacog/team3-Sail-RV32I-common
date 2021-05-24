@@ -1,0 +1,407 @@
+18.42. Executing AUTONAME pass.
+Renamed 219 objects in module ALUControl (15 iterations).
+Renamed 501 objects in module ForwardingUnit (14 iterations).
+Renamed 95 objects in module adder (3 iterations).
+Renamed 14409 objects in module alu (39 iterations).
+Renamed 3 objects in module branch_decision (2 iterations).
+Renamed 174 objects in module branch_predictor (5 iterations).
+Renamed 4368 objects in module cache (34 iterations).
+Renamed 16 objects in module control (4 iterations).
+Renamed 3 objects in module cpu_v2 (2 iterations).
+Renamed 8 objects in module csr_file (2 iterations).
+Renamed 155 objects in module ex_mem (2 iterations).
+Renamed 178 objects in module id_ex (2 iterations).
+Renamed 64 objects in module if_id (2 iterations).
+Renamed 141 objects in module imm_gen (10 iterations).
+Renamed 117 objects in module mem_wb (2 iterations).
+Renamed 32 objects in module mux2to1 (2 iterations).
+Renamed 32 objects in module program_counter (2 iterations).
+Renamed 246 objects in module regfile (10 iterations).
+Renamed 4 objects in module sign_mask_gen (2 iterations).
+Renamed 1 objects in module top (2 iterations).
+<suppressed ~2684 debug messages>
+
+18.43. Executing HIERARCHY pass (managing design hierarchy).
+
+18.43.1. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \cache
+Used module:     \cpu_v2
+Used module:         \csr_file
+Used module:         \program_counter
+Used module:         \mux2to1
+Used module:         \adder
+Used module:         \ALUControl
+Used module:         \alu
+Used module:         \branch_decision
+Used module:         \branch_predictor
+Used module:         \control
+Used module:         \ex_mem
+Used module:         \ForwardingUnit
+Used module:         \id_ex
+Used module:         \if_id
+Used module:         \imm_gen
+Used module:         \mem_wb
+Used module:         \regfile
+Used module:         \sign_mask_gen
+
+18.43.2. Analyzing design hierarchy..
+Top module:  \top
+Used module:     \cache
+Used module:     \cpu_v2
+Used module:         \csr_file
+Used module:         \program_counter
+Used module:         \mux2to1
+Used module:         \adder
+Used module:         \ALUControl
+Used module:         \alu
+Used module:         \branch_decision
+Used module:         \branch_predictor
+Used module:         \control
+Used module:         \ex_mem
+Used module:         \ForwardingUnit
+Used module:         \id_ex
+Used module:         \if_id
+Used module:         \imm_gen
+Used module:         \mem_wb
+Used module:         \regfile
+Used module:         \sign_mask_gen
+Removed 0 unused modules.
+
+18.44. Printing statistics.
+
+=== ALUControl ===
+
+   Number of wires:                 19
+   Number of wire bits:             76
+   Number of public wires:          19
+   Number of public wire bits:      76
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 32
+     SB_LUT4                        32
+
+=== ForwardingUnit ===
+
+   Number of wires:                 38
+   Number of wire bits:            150
+   Number of public wires:          38
+   Number of public wire bits:     150
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 60
+     SB_LUT4                        60
+
+=== adder ===
+
+   Number of wires:                  4
+   Number of wire bits:            128
+   Number of public wires:           4
+   Number of public wire bits:     128
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 63
+     SB_CARRY                       31
+     SB_LUT4                        32
+
+=== alu ===
+
+   Number of wires:                254
+   Number of wire bits:           1235
+   Number of public wires:         254
+   Number of public wire bits:    1235
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                715
+     SB_CARRY                       95
+     SB_LUT4                       620
+
+=== branch_decision ===
+
+   Number of wires:                  7
+   Number of wire bits:              7
+   Number of public wires:           7
+   Number of public wire bits:       7
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  3
+     SB_LUT4                         3
+
+=== branch_predictor ===
+
+   Number of wires:                 13
+   Number of wire bits:            138
+   Number of public wires:          13
+   Number of public wire bits:     138
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 69
+     SB_CARRY                       31
+     SB_DFFE                         2
+     SB_DFFN                         1
+     SB_LUT4                        35
+
+=== cache ===
+
+   Number of wires:               4307
+   Number of wire bits:         132283
+   Number of public wires:        4307
+   Number of public wire bits:  132283
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                465
+     SB_DFFE                        80
+     SB_DFFESR                       2
+     SB_DFFESS                       1
+     SB_LUT4                       380
+     SB_SPRAM256KA                   2
+
+=== control ===
+
+   Number of wires:                 14
+   Number of wire bits:             21
+   Number of public wires:          14
+   Number of public wire bits:      21
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 13
+     SB_LUT4                        13
+
+=== cpu_v2 ===
+
+   Number of wires:                 72
+   Number of wire bits:           1772
+   Number of public wires:          72
+   Number of public wire bits:    1772
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 44
+     ALUControl                      1
+     ForwardingUnit                  1
+     SB_LUT4                         3
+     adder                           2
+     alu                             1
+     branch_decision                 1
+     branch_predictor                1
+     control                         1
+     csr_file                        1
+     ex_mem                          1
+     id_ex                           1
+     if_id                           1
+     imm_gen                         1
+     mem_wb                          1
+     mux2to1                        24
+     program_counter                 1
+     regfile                         1
+     sign_mask_gen                   1
+
+=== csr_file ===
+
+   Number of wires:                 14
+   Number of wire bits:            218
+   Number of public wires:          14
+   Number of public wire bits:     218
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  8
+     SB_RAM40_4K                     8
+
+=== ex_mem ===
+
+   Number of wires:                  3
+   Number of wire bits:            311
+   Number of public wires:           3
+   Number of public wire bits:     311
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                155
+     SB_DFF                        155
+
+=== id_ex ===
+
+   Number of wires:                  3
+   Number of wire bits:            357
+   Number of public wires:           3
+   Number of public wire bits:     357
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                178
+     SB_DFF                        178
+
+=== if_id ===
+
+   Number of wires:                  3
+   Number of wire bits:            129
+   Number of public wires:           3
+   Number of public wire bits:     129
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 64
+     SB_DFF                         64
+
+=== imm_gen ===
+
+   Number of wires:                 18
+   Number of wire bits:            121
+   Number of public wires:          18
+   Number of public wire bits:     121
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 52
+     SB_LUT4                        52
+
+=== mem_wb ===
+
+   Number of wires:                  3
+   Number of wire bits:            235
+   Number of public wires:           3
+   Number of public wire bits:     235
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                117
+     SB_DFF                        117
+
+=== mux2to1 ===
+
+   Number of wires:                  4
+   Number of wire bits:             97
+   Number of public wires:           4
+   Number of public wire bits:      97
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 32
+     SB_LUT4                        32
+
+=== program_counter ===
+
+   Number of wires:                  3
+   Number of wire bits:             65
+   Number of public wires:           3
+   Number of public wire bits:      65
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                 32
+     SB_DFF                         32
+
+=== regfile ===
+
+   Number of wires:                 24
+   Number of wire bits:            253
+   Number of public wires:          24
+   Number of public wire bits:     253
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                133
+     SB_DFF                         48
+     SB_LUT4                        81
+     SB_RAM40_4K                     4
+
+=== sign_mask_gen ===
+
+   Number of wires:                  3
+   Number of wire bits:             10
+   Number of public wires:           3
+   Number of public wire bits:      10
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  4
+     SB_LUT4                         4
+
+=== top ===
+
+   Number of wires:                 14
+   Number of wire bits:            179
+   Number of public wires:          14
+   Number of public wire bits:     179
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:                  4
+     SB_HFOSC                        1
+     SB_LUT4                         1
+     cache                           1
+     cpu_v2                          1
+
+=== design hierarchy ===
+
+   top                               1
+     cache                           1
+     cpu_v2                          1
+       ALUControl                    1
+       ForwardingUnit                1
+       adder                         2
+       alu                           1
+       branch_decision               1
+       branch_predictor              1
+       control                       1
+       csr_file                      1
+       ex_mem                        1
+       id_ex                         1
+       if_id                         1
+       imm_gen                       1
+       mem_wb                        1
+       mux2to1                      24
+       program_counter               1
+       regfile                       1
+       sign_mask_gen                 1
+
+   Number of wires:               4916
+   Number of wire bits:         140144
+   Number of public wires:        4916
+   Number of public wire bits:  140144
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               2999
+     SB_CARRY                      188
+     SB_DFF                        594
+     SB_DFFE                        82
+     SB_DFFESR                       2
+     SB_DFFESS                       1
+     SB_DFFN                         1
+     SB_HFOSC                        1
+     SB_LUT4                      2116
+     SB_RAM40_4K                    12
+     SB_SPRAM256KA                   2
+
+18.45. Executing CHECK pass (checking for obvious problems).
+Checking module ALUControl...
+Checking module ForwardingUnit...
+Checking module adder...
+Checking module alu...
+Checking module branch_decision...
+Checking module branch_predictor...
+Checking module cache...
+Checking module control...
+Checking module cpu_v2...
+Checking module csr_file...
+Checking module ex_mem...
+Checking module id_ex...
+Checking module if_id...
+Checking module imm_gen...
+Checking module mem_wb...
+Checking module mux2to1...
+Checking module program_counter...
+Checking module regfile...
+Checking module sign_mask_gen...
+Checking module top...
+Found and reported 0 problems.

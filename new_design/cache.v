@@ -236,8 +236,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 *	modules in the design.
 	 */
 	initial begin
-		$readmemh("verilog/program.hex",data_block);
-		$readmemh("verilog/data.hex", data_block,2**12-1);
+		$readmemh("verilog/program.hex",instruction_memory);
+		$readmemh("verilog/data.hex", data_block);
 		clk_stall = 0;
 	end
 

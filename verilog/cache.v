@@ -149,16 +149,16 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 			3'b001: begin //Byte
 				case(addr_buf_byte_offset)
 					2'b00: begin
-						 replacement_word = {byteword,buf1,buf2,buf3};
+						 replacement_word = {buf3,buf2,buf1,byteword};
 					end
 					2'b01: begin
-						 replacement_word = {buf0,byteword,buf2,buf3};
+						 replacement_word = {buf3,buf2,byteword,buf0};
 					end
 					2'b10: begin
-						 replacement_word = {buf0,buf1,byteword,buf3};
+						 replacement_word = {buf3,byteword,buf1,buf0};
 					end
 					2'b11: begin
-						 replacement_word = {buf0,buf1,buf3,byteword};
+						 replacement_word = {byteword,buf2,buf1,buf0};
 					end
 				endcase
 			end

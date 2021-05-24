@@ -45,7 +45,7 @@
 
 
 
-module DSPadder(input1, input2, out);
+module DSPadder(input1, input2, out); // out = input1 - input2
 	//Input and output should remain the same to perserve interface, need to change the add operation.
 	input [31:0]	input1;
 	input [31:0]	input2;
@@ -72,8 +72,8 @@ module DSPadder(input1, input2, out);
 		.OHOLDBOT(0),
 		.OLOADTOP(0),
 		.OLOADBOT(0),
-		.ADDSUBTOP(0), 				// 0 for add, 1 for sub
-		.ADDSUBBOT(0),				// --||--
+		.ADDSUBTOP(1), 				// 0 for add, 1 for sub
+		.ADDSUBBOT(1),				// --||--
 		.CO(),         				// Carry output, could be used to indicate overflow in the future
 		.CI(0),								// Carry input to lower adder, set to zero
 		.ACCUMCI(0),					// Could be used for feedback? implementing other logic functions?
@@ -90,7 +90,7 @@ module DSPadder(input1, input2, out);
 		defparam i_sbmac16.BOTADDSUB_UPPERINPUT = 1'b1 ;			// Connects D to Y (upper input)
 		defparam i_sbmac16.BOTADDSUB_LOWERINPUT = 2'b00 ;  		// Connects B to Z (lower input)
 		defparam i_sbmac16.BOTOUTPUT_SELECT = 2'b00 ;					// Connects output of adder directly to Lo output
-		defparam i_sbmac16.TOPADDSUB_CARRYSELECT = 2'b10 ; 		// Connects carry out from lower adder to upper adder, 11 should work aswell but higher prop delay?
+		defparam i_sbmac16.TOPADDSUB_CARRYSELECT = 2'b11 ; 		// Connects carry out from lower adder to upper adder, (11 should work aswell but higher prop delay?)
 		defparam i_sbmac16.TOPADDSUB_UPPERINPUT = 1'b1 ;  		// Connects C to W (upper input)
 		defparam i_sbmac16.TOPADDSUB_LOWERINPUT = 2'b10 ; 		// Connects A to X (lower input)
 		defparam i_sbmac16.TOPOUTPUT_SELECT = 2'b00 ;					// Connects output of adder directly to Hi output

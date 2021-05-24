@@ -268,8 +268,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				word_buf <= dataout;
 				if(memread_buf==1'b1) begin
+					word_buf <= dataout;
 					state <= READ;
 				end
 				else if(memwrite_buf == 1'b1) begin

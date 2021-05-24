@@ -180,12 +180,12 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	wire[7:0] byte_r2;
 	wire[7:0] byte_r3;
  
-	assign byte_r0 = (bdec_sig0==1'b1) ? write_data[7:0] : 8'b00;
-	assign byte_r1 = (bdec_sig1==1'b1) ? write_data[7:0] : 8'b00;
-	assign byte_r2 = (bdec_sig2==1'b1) ? write_data[7:0] : 8'b00;
-	assign byte_r3 = (bdec_sig3==1'b1) ? write_data[7:0] : 8'b00;
+	assign byte_r0 = (bdec_sig0==1'b1) ? write_data[7:0] : ((bdec_sig1==1'b1) ? write_data[15:8]:((bdec_sig2==1'b1)? write_data[23:16]:write_data[31:24]));
+	assign byte_r1 = (bdec_sig0==1'b1) ? write_data[15:8] : ((bdec_sig1==1'b1) ? write_data[23:16]:((bdec_sig2==1'b1)? write_data[31:24]:8'b00));
+	assign byte_r2 = (bdec_sig0==1'b1) ? write_data[23:16] : ((bdec_sig1==1'b1) ? write_data[31:24]:8'b00);
+	assign byte_r3 = (bdec_sig0==1'b1) ? write_data[31:24] : 8'b00;
 
-	assign datain = {byte_r0,byte_r1,byte_r2,byte_r3};
+	assign datain = {byte_r3,byte_r2,byte_r1,byte_r0};
 	assign sp_mask ={{2{sign_mask_buf[2]}},sign_mask_buf[1:0]};
 
 	/*

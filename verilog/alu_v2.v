@@ -76,20 +76,10 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	end
 
 	/*decoder*/
-	wire 3to0_AND;
-	wire 3to0_OR;
-	wire 3to0_ADD;
-	wire 3to0_SUB;
-	wire 3to0_SLT;
-	wire 3to0_SRL;
-	wire 3to0_SRA;
-	wire 3to0_SLL;
-	wire 3to0_XOR;
-	wire 3to0_CSRRW;
-	wire 3to0_CSRRS;
-	wire 3to0_CSRRC;
+	wire[31:0] out;
+	
 
-	assign ALUOut = (ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND)? A & B:( 
+	assign out = (ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND)? A & B:( 
 		(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR)|(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS) ? A | B :(
 			(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD)? A - B:(
 				(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB)? ($signed(A) < $signed(B) ? 32'b1 : 32'b0):(
@@ -108,18 +98,27 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 				)
 			)
 		);
-		
-
-	always @(ALUctl, ALUOut, A, B) begin
-		case (ALUctl[6:4])
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:	Branch_Enable = (ALUOut == 0);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:	Branch_Enable = !(ALUOut == 0);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = ($signed(A) < $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = ($signed(A) >= $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = ($unsigned(A) < $unsigned(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
-
-			default:					Branch_Enable = 1'b0;
-		endcase
+	
+	always@(ALUctl, A, B)begin
+		ALUOut <= out;
 	end
+
+	wire branch;
+
+	assign branch = (ALUctl[6:4]==`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ)? (ALUOut == 0):(
+		(ALUctl[6:4]==`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE)? !(ALUOut == 0):(
+			(ALUctl[6:4]==`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT)? ($signed(A) < $signed(B)):(
+				(ALUctl[6:4]==`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE)? ($signed(A) >= $signed(B)):(
+					(ALUctl[6:4]==`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU)? ($unsigned(A) < $unsigned(B)):(
+						(ALUctl[6:4]==`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU)? ($unsigned(A) >= $unsigned(B)):1'b0
+					)
+				)
+			)
+		)
+	);
+
+	always@(ALUctl, A, B,ALUOut)begin
+		Branch_Enable <= branch;
+	end
+
 endmodule

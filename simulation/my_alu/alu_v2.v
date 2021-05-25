@@ -76,18 +76,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	end
 
 	/*decoder*/
-	wire 3to0_AND;
-	wire 3to0_OR;
-	wire 3to0_ADD;
-	wire 3to0_SUB;
-	wire 3to0_SLT;
-	wire 3to0_SRL;
-	wire 3to0_SRA;
-	wire 3to0_SLL;
-	wire 3to0_XOR;
-	wire 3to0_CSRRW;
-	wire 3to0_CSRRS;
-	wire 3to0_CSRRC;
+	
 
 	assign ALUOut = (ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND)? A & B:( 
 		(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR)|(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS) ? A | B :(

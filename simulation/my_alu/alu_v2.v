@@ -41,11 +41,14 @@
 
 
 
+
+
 /*
  *	Description:
  *
  *		This module implements the ALU for the RV32I.
  */
+
 
 
 
@@ -75,74 +78,77 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		Branch_Enable = 1'b0;
 	end
 
-	always @(ALUctl, A, B) begin
-		case (ALUctl[3:0])
-			/*
-			 *	AND (the fields also match ANDI and LUI)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND:	ALUOut = A & B;
+	wire[31:0] mu0_out;
+	wire[31:0] mu1_out;
+	wire[31:0] mu2_out;
+	
 
-			/*
-			 *	OR (the fields also match ORI)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR:	ALUOut = A | B;
+	m41_32 mu0(
+		.a(A ^ B),
+		.b(A),
+		.c(A | B),
+		.d((~A) & B),
+		.s1(ALUctl[1]),
+		.s0(ALUctl[0]),
+		.out(mu0_out)
+		);
 
-			/*
-			 *	ADD (the fields also match AUIPC, all loads, all stores, and ADDI)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	ALUOut = A + B;
+	m41_32 mu1(
+		.a(A >>> B[4:0]),
+		.b(A << B[4:0]),
+		.c(A - B),
+		.d(($signed(A) < $signed(B) ? 32'b1 : 32'b0)),
+		.s1(ALUctl[1]),
+		.s0(ALUctl[0]),
+		.out(mu1_out)
+	);
 
-			/*
-			 *	SUBTRACT (the fields also matches all branches)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = A - B;
+	m41_32 mu2(
+		.a(A & B),
+		.b(A | B ),
+		.c(A + B),
+		.d(A >> B[4:0]),
+		.s1(ALUctl[1]),
+		.s0(ALUctl[0]),
+		.out(mu2_out)
+	);
 
-			/*
-			 *	SLT (the fields also matches all the other SLT variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
+	m41_32 mu3(
+		.a(mu2_out),
+		.b(mu1_out ),
+		.c(32'b00),
+		.d(mu0_out),
+		.s1(ALUctl[3]),
+		.s0(ALUctl[2]),
+		.out(ALUOut)
+	);
 
-			/*
-			 *	SRL (the fields also matches the other SRL variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRL:	ALUOut = A >> B[4:0];
+	/*
+	always @(ALUctl, ALUOut, A, B) begin
+		ALUOut = (ALUctl[3])? (
+		(ALUctl[1])? (
+			(ALUctl[0])? (~A) & B : A | B
+		):(
+			(ALUctl[0])? A : A ^ B
+		)
+	):(
+		(ALUctl[2])?(
+			(ALUctl[1])?(
+				(ALUctl[0])? ($signed(A) < $signed(B) ? 32'b1 : 32'b0) : A - B
+			):(
+				(ALUctl[0])? A << B[4:0] : A >>> B[4:0]
+			)
+		):(
+			(ALUctl[1])?(
+				(ALUctl[0])? A >> B[4:0] : A + B
+			):(
+				(ALUctl[0])? A | B : A & B
+			)
+		)
+	);
+	end*/
 
-			/*
-			 *	SRA (the fields also matches the other SRA variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRA:	ALUOut = A >>> B[4:0];
-
-			/*
-			 *	SLL (the fields also match the other SLL variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLL:	ALUOut = A << B[4:0];
-
-			/*
-			 *	XOR (the fields also match other XOR variants)
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:	ALUOut = A ^ B;
-
-			/*
-			 *	CSRRW  only
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW:	ALUOut = A;
-
-			/*
-			 *	CSRRS only
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS:	ALUOut = A | B;
-
-			/*
-			 *	CSRRC only
-			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC:	ALUOut = (~A) & B;
-
-			/*
-			 *	Should never happen.
-			 */
-			default:					ALUOut = 0;
-		endcase
-	end
+	
 
 	always @(ALUctl, ALUOut, A, B) begin
 		case (ALUctl[6:4])

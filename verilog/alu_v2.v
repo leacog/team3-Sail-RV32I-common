@@ -100,7 +100,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 				(ALUctl[0])? A | B : A & B
 			)
 		)
-	)
+	);
 
 	
 	

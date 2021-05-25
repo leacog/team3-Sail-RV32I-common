@@ -344,7 +344,7 @@ module cpu_v2(
 			.out(alu_mux_out)
 		);
 
-	alu alu_main(
+	alu_v2 alu_main(
 			.ALUctl(id_ex_out[146:140]),
 			.A(wb_fwd1_mux_out),
 			.B(alu_mux_out),

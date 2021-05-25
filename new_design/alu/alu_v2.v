@@ -87,9 +87,9 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		.a(A ^ B),
 		.b(A),
 		.c(A | B),
-		.d((~A) & B)
-		.s1(ALUctl[1])
-		.s0(ALUctl[0])
+		.d((~A) & B),
+		.s1(ALUctl[1]),
+		.s0(ALUctl[0]),
 		.out(mu0_out)
 		);
 
@@ -97,9 +97,9 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		.a(A >>> B[4:0]),
 		.b(A << B[4:0]),
 		.c(A - B),
-		.d(($signed(A) < $signed(B) ? 32'b1 : 32'b0))
-		.s1(ALUctl[1])
-		.s0(ALUctl[0])
+		.d(($signed(A) < $signed(B) ? 32'b1 : 32'b0)),
+		.s1(ALUctl[1]),
+		.s0(ALUctl[0]),
 		.out(mu1_out)
 	);
 
@@ -107,9 +107,9 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		.a(A & B),
 		.b(A | B ),
 		.c(A + B),
-		.d(A >> B[4:0])
-		.s1(ALUctl[1])
-		.s0(ALUctl[0])
+		.d(A >> B[4:0]),
+		.s1(ALUctl[1]),
+		.s0(ALUctl[0]),
 		.out(mu2_out)
 	);
 
@@ -117,9 +117,9 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		.a(mu2_out),
 		.b(mu1_out ),
 		.c(32'b00),
-		.d(mu0_out)
-		.s1(ALUctl[3])
-		.s0(ALUctl[2])
+		.d(mu0_out),
+		.s1(ALUctl[3]),
+		.s0(ALUctl[2]),
 		.out(ALUOut)
 	);
 

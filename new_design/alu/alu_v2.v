@@ -81,6 +81,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	wire[31:0] mu0_out;
 	wire[31:0] mu1_out;
 	wire[31:0] mu2_out;
+	wire[31:0] mu3_out;
 	
 
 	m41_32 mu0(
@@ -120,8 +121,12 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		.d(mu0_out),
 		.s1(ALUctl[3]),
 		.s0(ALUctl[2]),
-		.out(ALUOut)
+		.out(mu3_out)
 	);
+
+	always @(ALUctl, A, B) begin
+		ALUOut <= mu3_out;
+	end
 
 	/*
 	always @(ALUctl, ALUOut, A, B) begin

@@ -76,9 +76,10 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	end
 
 	/*decoder*/
+	wire[31:0] out;
 	
 
-	assign ALUOut = (ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND)? A & B:( 
+	assign out = (ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND)? A & B:( 
 		(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR)|(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS) ? A | B :(
 			(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD)? A - B:(
 				(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB)? ($signed(A) < $signed(B) ? 32'b1 : 32'b0):(
@@ -98,6 +99,8 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			)
 		);
 		
+	ALUOut <= out;
+
 
 	always @(ALUctl, ALUOut, A, B) begin
 		case (ALUctl[6:4])

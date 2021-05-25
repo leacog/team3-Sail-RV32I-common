@@ -77,65 +77,35 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 
 	/*decoder*/
 	wire[31:0] out;
-	wire a;
-	wire b;
-	wire c;
-	wire d;
-	wire A3to0_AND;
-	wire A3to0_OR;
-	wire A3to0_ADD;
-	wire A3to0_SUB;
-	wire A3to0_SLT;
-	wire A3to0_SRL;
-	wire A3to0_SRA;
-	wire A3to0_SLL;
-	wire A3to0_XOR;
-	wire A3to0_CSRRW;
-	wire A3to0_CSRRS;
-	wire A3to0_CSRRC;
-
-	assign a=ALUctl[3];
-	assign b=ALUctl[2];
-	assign c=ALUctl[1];
-	assign d=ALUctl[0];
-
-	assign A3to0_AND= !( a | b | c | d);
-	assign A3to0_OR= (!(a | b | c )) & d;
-	assign A3to0_ADD= (!(a | b | d )) & c;
-	assign A3to0_SUB= (!(a | d))&( b & c);
-	assign A3to0_SLT= (!a)&(b & c & d);
-	assign A3to0_SRL=(!(a | b))&( c & d);
-	assign A3to0_SRA=(!b)&(!(a | c | d));
-	assign A3to0_SLL=(!(a | c))&( b & d);
-	assign A3to0_XOR= a &(!(b | c | d));
-	assign A3to0_CSRRW=(!(b | c))&( a & d);
-	assign A3to0_CSRRS=(!(b | d))&( a & c);
-	assign A3to0_CSRRC=(!b)&(a & c & d);
 
 	
-	
 
-	assign out = (A3to0_AND)? A & B:(
-		((A3to0_OR)|(A3to0_CSRRS)) ? A | B :(
-			(A3to0_ADD)?  A + B :(
-				(A3to0_SUB)? A - B:(
-					(A3to0_SLT)?($signed(A) < $signed(B) ? 32'b1 : 32'b0):(
-						(A3to0_SRL)? A >> B[4:0] :(
-							(A3to0_SRA)? A >>> B[4:0]:(
-								(A3to0_SLL)? A << B[4:0]:(
-									(A3to0_XOR)?  A ^ B :(
-										(A3to0_CSRRW)? A:(
-											(A3to0_CSRRC)? (~A) & B : 32'b0
-										)
-									)
-								)
-							)
-						)
-					)		
-				)
+	assign out=(ALUctl[3])? (
+		(ALUctl[1])? (
+			(ALUctl[0])? (~A) & B : A | B
+		):(
+			(ALUctl[0])? A : A ^ B
+		)
+	):(
+		(ALUctl[2])?(
+			(ALUctl[1])?(
+				(ALUctl[0])? ($signed(A) < $signed(B) ? 32'b1 : 32'b0) : A - B
+			):(
+				(ALUctl[0])? A << B[4:0] : A >>> B[4:0]
+			)
+		):(
+			(ALUctl[1])?(
+				(ALUctl[0])? A >> B[4:0] : A + B
+			):(
+				(ALUctl[0])? A | B : A & B
 			)
 		)
-	);
+	)
+
+	
+	
+
+	
 
 	
 	always@(ALUctl, A, B)begin

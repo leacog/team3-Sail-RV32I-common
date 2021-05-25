@@ -119,10 +119,10 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		((A3to0_OR)|(A3to0_CSRRS)) ? A | B :(
 			(A3to0_ADD)?  A + B :(
 				(A3to0_SUB)? A - B:(
-					(A3to0_SLT)?	($signed(A) < $signed(B) ? 32'b1 : 32'b0):(
+					(A3to0_SLT)?($signed(A) < $signed(B) ? 32'b1 : 32'b0):(
 						(A3to0_SRL)? A >> B[4:0] :(
 							(A3to0_SRA)? A >>> B[4:0]:(
-								(A3to0_SLL)? A << B[4:0](
+								(A3to0_SLL)? A << B[4:0]:(
 									(A3to0_XOR)?  A ^ B :(
 										(A3to0_CSRRW)? A:(
 											(A3to0_CSRRC)? (~A) & B : 32'b0

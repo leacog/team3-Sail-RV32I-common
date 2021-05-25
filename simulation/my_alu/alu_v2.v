@@ -137,14 +137,6 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			 */
 			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC:	ALUOut = (~A) & B;
 
-			4'b1100:ALUOut = 0;
-
-			4'b1101:ALUOut = 0;
-
-			4'b1110:ALUOut = 0;
-
-			4'b1111:ALUOut = 0;
-
 			/*
 			 *	Should never happen.
 			 */

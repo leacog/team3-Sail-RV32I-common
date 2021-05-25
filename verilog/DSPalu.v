@@ -54,14 +54,13 @@
  *	field is only unique across the instructions that are actually
  *	fed to the ALU.
  */
-module alu(ALUctl, A, B, ALUOut, Branch_Enable);
+module DSPalu(ALUctl, A, B, ALUOut, Branch_Enable);
 	input [6:0]		ALUctl;
 	input [31:0]		A;
 	input [31:0]		B;
 	output reg [31:0]	ALUOut;
 	output reg		Branch_Enable;
 
-	wire addSubSelectLine;
 	wire [31:0] DSPadd; //Wire to connect to DSP sum
 	wire [31:0] DSPsub; //Wire to connect to DSP subraction result
 
@@ -80,11 +79,16 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	end
 
 	
-	DSPsub_add alu_subAdd(
+	DSPadder alu_adder(
 			.input1(A),
 			.input2(B),
-			.addSubSelect()
-			.out(DSPsum),
+			.out(DSPadd)
+		);
+
+	DSPsubtractor alu_subbtractor(
+			.input1(A),
+			.input2(B),
+			.out(DSPsub)
 		);
 
 	always @(ALUctl, A, B) begin
@@ -102,12 +106,12 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			/*
 			 *	ADD (the fields also match AUIPC, all loads, all stores, and ADDI)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	begin	addSubSelect = 0; ALUOut = DSPsum;
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	ALUOut = DSPadd;
 
 			/*
 			 *	SUBTRACT (the fields also matches all branches)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	begin addSubSelect = 1; ALUOut = DSPsum;
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = DSPsub;
 
 			/*
 			 *	SLT (the fields also matches all the other SLT variants)

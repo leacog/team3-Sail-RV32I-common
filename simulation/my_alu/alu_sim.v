@@ -18,7 +18,7 @@ module top();
 		.Opcode(Opcode)
 	);
 
-	alu_v2 alu_inst(
+	alu alu_inst(
 		.ALUctl(AluCtl_wire),
 		.A(A),
 		.B(B),

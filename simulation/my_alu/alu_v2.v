@@ -98,8 +98,10 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 				)
 			)
 		);
-		
-	ALUOut <= out;
+	
+	always@(ALUctl, A, B)begin
+		ALUOut <= out;
+	end
 
 
 	always @(ALUctl, ALUOut, A, B) begin

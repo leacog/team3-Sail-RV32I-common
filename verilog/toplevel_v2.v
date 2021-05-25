@@ -86,7 +86,7 @@ module top (led);
 		.data_mem_sign_mask(data_sign_mask)
 	);
 
-	memory cache_inst(
+	cache cache_inst(
 			.clk(clk),
 			.inst_addr(inst_in),
 			.inst_out(inst_out),

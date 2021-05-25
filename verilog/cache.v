@@ -77,7 +77,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	/*
 	 *	Read buffer
 	 */
-	wire [31:0]		read_buf;
+	reg [31:0]		read_buf;
 
 	/*
 	 *	Buffer to identify read or write operation
@@ -105,47 +105,20 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 *
 	 *	(Bad practice: The constant for the size should be a `define).
 	 */
+	reg [31:0]		data_block[0:1023];
 	reg [31:0]		instruction_memory[0:2**12-1];
-	wire [9:0]		addr_buf_block_addr;
-	wire [31:0]     datain;
-	wire [3:0]		sp_mask1;
-	wire [3:0]		sp_mask2;
-	wire [13:0]     sp_addr;
-	wire [31:0]		dataout;
-	wire			writen;
-
-	SB_SPRAM256KA mem_up(
-		.DATAIN(datain[31:16]),
-		.ADDRESS(addr_buf_block_addr),
-		.MASKWREN(sp_mask1),
-		.WREN(writen),
-		.CHIPSELECT(1'b1),
-		.CLOCK(clk),
-		.DATAOUT(dataout[31:16])
-	);
-	SB_SPRAM256KA mem_low(
-		.DATAIN(datain[15:0]),
-		.ADDRESS(addr_buf_block_addr),
-		.MASKWREN(sp_mask2),
-		.WREN(writen),
-		.CHIPSELECT(1'b1),
-		.CLOCK(clk),
-		.DATAOUT(dataout[15:0])
-	);
 
 	/*
 	 *	wire assignments
 	 */
-	
+	wire [9:0]		addr_buf_block_addr;
 	wire [1:0]		addr_buf_byte_offset;
 	
 	reg [31:0]		replacement_word;
 
-	assign			writen = memwrite_buf;
-	assign			addr_buf_block_addr	= addr_buf[11:2] - 32'h1000;
+	assign			addr_buf_block_addr	= addr_buf[11:2];
 	assign			addr_buf_byte_offset	= addr_buf[1:0];
 
-	
 	/*
 	 *	Regs for multiplexer output
 	 */
@@ -159,68 +132,107 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	assign 			buf2	= word_buf[23:16];
 	assign 			buf3	= word_buf[31:24];
 
-	/*
-	 *	Byte select decoder
-	 */
-	wire bdec_sig0;
-	wire bdec_sig1;
-	wire bdec_sig2;
-	wire bdec_sig3;
+	wire[7:0]	byteword;	
+	
+	assign		byteword	=write_data_buffer[7:0];
+	
+	wire[15:0]	halfword;
 
-	assign bdec_sig0 = (~addr_buf_byte_offset[1]) & (~addr_buf_byte_offset[0]);
-	assign bdec_sig1 = (~addr_buf_byte_offset[1]) & (addr_buf_byte_offset[0]);
-	assign bdec_sig2 = (addr_buf_byte_offset[1]) & (~addr_buf_byte_offset[0]);
-	assign bdec_sig3 = (addr_buf_byte_offset[1]) & (addr_buf_byte_offset[0]);
-
+	assign		halfword	=write_data_buffer[15:0];
 
 	/*
 	 *	Constructing the word to be replaced for write byte
 	 */
-	wire[7:0] byte_r0;
-	wire[7:0] byte_r1;
-	wire[7:0] byte_r2;
-	wire[7:0] byte_r3;
- 
-	assign byte_r0 = (bdec_sig0==1'b1) ? write_data[7:0] : ((bdec_sig1==1'b1) ? write_data[15:8]:((bdec_sig2==1'b1)? write_data[23:16]:write_data[31:24]));
-	assign byte_r1 = (bdec_sig0==1'b1) ? write_data[15:8] : ((bdec_sig1==1'b1) ? write_data[23:16]:((bdec_sig2==1'b1)? write_data[31:24]:8'b00));
-	assign byte_r2 = (bdec_sig0==1'b1) ? write_data[23:16] : ((bdec_sig1==1'b1) ? write_data[31:24]:8'b00);
-	assign byte_r3 = (bdec_sig0==1'b1) ? write_data[31:24] : 8'b00;
 
-	assign datain = {byte_r3,byte_r2,byte_r1,byte_r0};
-	assign sp_mask1 ={4{sign_mask_buf[2]}};
-	assign sp_mask2 ={{2{sign_mask_buf[1]}},{2{sign_mask_buf[0]}}};
+	always @(*) begin
+		case(sign_mask_buf[2:0])
+			3'b001: begin //Byte
+				case(addr_buf_byte_offset)
+					2'b00: begin
+						 replacement_word = {buf3,buf2,buf1,byteword};
+					end
+					2'b01: begin
+						 replacement_word = {buf3,buf2,byteword,buf0};
+					end
+					2'b10: begin
+						 replacement_word = {buf3,byteword,buf1,buf0};
+					end
+					2'b11: begin
+						 replacement_word = {byteword,buf2,buf1,buf0};
+					end
+				endcase
+			end
+			
+			3'b011: begin //Halfword
+				case(addr_buf_byte_offset[1])
+					1'b0: begin
+						 replacement_word = {buf3, buf2,halfword};
+					end
+					1'b1: begin
+						 replacement_word = {halfword,buf1, buf0};
+					end
+				endcase
+			end
+			
+			3'b111: begin //Word
+				 replacement_word = 	write_data_buffer;
+			end
+			
+			default: begin
+				//do nothing
+			end
+		endcase
+	end
+
+
 
 	/*
 	 *	Combinational logic for generating 32-bit read data
 	 */
 	
-	wire select0;
-	wire select1;
-	wire select2;
-	
-	wire[31:0] out1;
-	wire[31:0] out2;
-	wire[31:0] out3;
-	wire[31:0] out4;
-	wire[31:0] out5;
-	wire[31:0] out6;
+
 	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0]
 	 * d is addr_buf_byte_offset[1], e is addr_buf_byte_offset[0]
 	 */
-	
-	assign select0 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & ~addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & sign_mask_buf[1] & addr_buf_byte_offset[1]); //~a~b~de + ~ade + ~abd
-	assign select1 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & addr_buf_byte_offset[1]) | (sign_mask_buf[2] & sign_mask_buf[1]); // ~a~bd + ab
-	assign select2 = sign_mask_buf[1]; //b
-	
-	assign out1 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf1[7]}}, buf1} : {24'b0, buf1}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf0[7]}}, buf0} : {24'b0, buf0});
-	assign out2 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf3[7]}}, buf3} : {24'b0, buf3}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf2[7]}}, buf2} : {24'b0, buf2}); 
-	assign out3 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{16{buf3[7]}}, buf3, buf2} : {16'b0, buf3, buf2}) : ((sign_mask_buf[3]==1'b1) ? {{16{buf1[7]}}, buf1, buf0} : {16'b0, buf1, buf0});
-	assign out4 = (select0) ? 32'b0 : {buf3, buf2, buf1, buf0};
-	
-	assign out5 = (select1) ? out2 : out1;
-	assign out6 = (select1) ? out4 : out3;
-	
-	assign read_buf = (select2) ? out6 : out5;
+	always @(*) begin
+		case(sign_mask_buf[2:0])
+			3'b001: begin //Byte
+				case(addr_buf_byte_offset)
+					2'b00: begin
+						 read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf0[7]}}, buf0}:{24'b0, buf0};
+					end
+					2'b01: begin
+						 read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf1[7]}}, buf1}:{24'b0, buf1};
+					end
+					2'b10: begin
+						 read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf2[7]}}, buf2}:{24'b0, buf2};
+					end
+					2'b11: begin
+						 read_buf = (sign_mask_buf[3]==1'b1)?{{24{buf3[7]}}, buf3}:{24'b0, buf3};
+					end
+				endcase
+			end
+			
+			3'b011: begin //Halfword
+				case(addr_buf_byte_offset[1])
+					1'b0: begin
+						 read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf1[7]}}, buf1, buf0}:{16'b0, buf1, buf0};
+					end
+					1'b1: begin
+						 read_buf = (sign_mask_buf[3]==1'b1)?{{16{buf3[7]}}, buf3, buf2}:{16'b0, buf3, buf2};
+					end
+				endcase
+			end
+			
+			3'b111: begin //Word
+				 read_buf = {buf3, buf2, buf1, buf0};
+			end
+			
+			default: begin
+				//do nothing
+			end
+		endcase
+	end
 	
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
@@ -233,7 +245,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 	 */
 	initial begin
 		$readmemh("verilog/program.hex",instruction_memory);
-		//$readmemh("verilog/data.hex", data_block);
+		$readmemh("verilog/data.hex", data_block);
 		clk_stall = 0;
 	end
 
@@ -270,8 +282,8 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
+				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
 				if(memread_buf==1'b1) begin
-					word_buf <= dataout;
 					state <= READ;
 				end
 				else if(memwrite_buf == 1'b1) begin
@@ -292,6 +304,7 @@ module cache (clk, inst_addr,addr, write_data, memwrite, memread, sign_mask, rea
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
+				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
 				state <= IDLE;
 			end
 

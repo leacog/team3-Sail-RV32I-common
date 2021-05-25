@@ -77,27 +77,66 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 
 	/*decoder*/
 	wire[31:0] out;
+	wire a;
+	wire b;
+	wire c;
+	wire d;
+	wire 3to0_AND;
+	wire 3to0_OR;
+	wire 3to0_ADD;
+	wire 3to0_SUB;
+	wire 3to0_SLT;
+	wire 3to0_SRL;
+	wire 3to0_SRA;
+	wire 3to0_SLL;
+	wire 3to0_XOR;
+	wire 3to0_CSRRW;
+	wire 3to0_CSRRS;
+	wire 3to0_CSRRC;
+
+	assign a=ALUctl[3];
+	assign b=ALUctl[2];
+	assign c=ALUctl[1];
+	assign d=ALUctl[0];
+
+	assign 3to0_AND= !( a | b | c | d);
+	assign 3to0_OR= (!(a | b | c )) & d;
+	assign 3to0_ADD= (!(a | b | d )) & c;
+	assign 3to0_SUB= (!(a | d))&( b & c);
+	assign 3to0_SLT= (!a)&(b & c & d);
+	assign 3to0_SRL=(!(a | b))&( c & d);
+	assign 3to0_SRA=(!b)&(!(a | c | d));
+	assign 3to0_SLL=(!(a | c))&( b & d);
+	assign 3to0_XOR= a &(!(b | c | d));
+	assign 3to0_CSRRW=(!(b | c))&( a & d);
+	assign 3to0_CSRRS=(!(b | d))&( a & c);
+	assign 3to0_CSRRC=(!b)&(a & c & d);
+
+	
 	
 
-	assign out = (ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_AND)? A & B:( 
-		(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_OR)|(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS) ? A | B :(
-			(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD)? A - B:(
-				(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB)? ($signed(A) < $signed(B) ? 32'b1 : 32'b0):(
-					(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRL)? A >> B[4:0]:(
-						(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SRA)? A >>> B[4:0]:(
-							(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLL)? A << B[4:0]:(
-								(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR)? A ^ B:(
-									(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW)? A:(
-										(ALUctl[3:0]==`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW)? (~A) & B:32'b0
+	assign out = (3to0_AND)? A & B:(
+		((3to0_OR)|(3to0_CSRRS)) ? A | B :(
+			(3to0_ADD)?  A + B :(
+				(3to0_SUB)? A - B:(
+					(3to0_SLT)?	($signed(A) < $signed(B) ? 32'b1 : 32'b0):(
+						(3to0_SRL)? A >> B[4:0] :(
+							(3to0_SRA)? A >>> B[4:0]:(
+								(3to0_SLL)? A << B[4:0](
+									(3to0_XOR)?  A ^ B :(
+										(3to0_CSRRW)? A:(
+											(3to0_CSRRC)? (~A) & B : 32'b0
 										)
 									)
 								)
 							)
 						)
-					)
+					)		
 				)
 			)
-		);
+		)
+	);
+
 	
 	always@(ALUctl, A, B)begin
 		ALUOut <= out;

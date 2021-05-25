@@ -49,7 +49,7 @@
  *	field is only unique across the instructions that are actually
  *	fed to the ALU.
  */
-module DSPalu(ALUctl, A, B, ALUOut, Branch_Enable);
+module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	input [6:0]		ALUctl;
 	input [31:0]		A;
 	input [31:0]		B;

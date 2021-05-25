@@ -16,8 +16,10 @@ input[31:0] d,
 input s0, s1, 
 output out);
 
+genvar i;
+
 generate
-	for (i=0; i<32; i = i+1)begin
+	for (i=0; i < 32; i = i+1)begin
 		m41 m41_inst (a[i],b[i],c[i],d[i],s0,s1);
 	end
 endgenerate

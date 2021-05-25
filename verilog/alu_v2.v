@@ -41,11 +41,14 @@
 
 
 
+
+
 /*
  *	Description:
  *
  *		This module implements the ALU for the RV32I.
  */
+
 
 
 
@@ -75,7 +78,52 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		Branch_Enable = 1'b0;
 	end
 
+	wire[31:0] mu0_out;
+	wire[31:0] mu1_out;
+	wire[31:0] mu2_out;
+	
 
+	m41_32 mu0(
+		.a(A ^ B),
+		.b(A),
+		.c(A | B),
+		.d((~A) & B)
+		.s1(ALUctl[1])
+		.s0(ALUctl[0])
+		.out(mu0_out)
+		);
+
+	m41_32 mu1(
+		.a(A >>> B[4:0]),
+		.b(A << B[4:0]),
+		.c(A - B),
+		.d(($signed(A) < $signed(B) ? 32'b1 : 32'b0))
+		.s1(ALUctl[1])
+		.s0(ALUctl[0])
+		.out(mu1_out)
+	);
+
+	m41_32 mu2(
+		.a(A & B),
+		.b(A | B ),
+		.c(A + B),
+		.d(A >> B[4:0])
+		.s1(ALUctl[1])
+		.s0(ALUctl[0])
+		.out(mu2_out)
+	);
+
+	m41_32 mu3(
+		.a(mu2_out),
+		.b(mu1_out ),
+		.c(32'b00),
+		.d(mu0_out)
+		.s1(ALUctl[3])
+		.s0(ALUctl[2])
+		.out(ALUOut)
+	);
+
+	/*
 	always @(ALUctl, ALUOut, A, B) begin
 		ALUOut = (ALUctl[3])? (
 		(ALUctl[1])? (
@@ -98,7 +146,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			)
 		)
 	);
-	end
+	end*/
 
 	
 

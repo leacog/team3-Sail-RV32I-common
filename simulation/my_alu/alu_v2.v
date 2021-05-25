@@ -115,7 +115,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 				)
 			)
 		)
-	)
+	);
 
 	always@(ALUctl, A, B,ALUOut)begin
 		Branch_Enable <= branch;

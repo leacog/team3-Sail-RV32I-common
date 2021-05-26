@@ -75,6 +75,15 @@ initial begin
  	FuncCode = 4'b1000;
  	Opcode = 7'b0110011;
 
+	#5
+
+ 	//simulate SUB instruction
+ 	A = 32'b0;
+ 	B = 32'b10;
+ 	FuncCode = 4'b1000;
+ 	Opcode = 7'b0110011;
+
+
  	#5
 
  	//simulate SLT instuction

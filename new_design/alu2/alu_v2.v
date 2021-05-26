@@ -58,6 +58,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 
 	wire [31:0] DSPadd; //Wire to connect to DSP sum
 	wire [31:0] DSPsub; //Wire to connect to DSP subraction result
+	wire carry;
 
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
@@ -83,12 +84,13 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	DSPsubtractor alu_subbtractor(
 			.input1(A),
 			.input2(B),
-			.out(DSPsub)
+			.out(DSPsub),
+			.carry(carry)
 		);
 
 
 
-	always @(ALUctl, A, B) begin
+	always @(ALUctl, A, B,DSPadd,DSPsub) begin
 		case (ALUctl[3:0])
 			/*
 			 *	AND (the fields also match ANDI and LUI)
@@ -157,14 +159,14 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		endcase
 	end
 
-	always @(ALUctl, ALUOut, A, B) begin
+	always @(ALUctl, ALUOut, A, B,DSPsub,carry) begin
 		case (ALUctl[6:4])
 			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:	Branch_Enable = (ALUOut == 0);
 			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:	Branch_Enable = !(ALUOut == 0);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = ($signed(A) < $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = ($signed(A) >= $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = ($unsigned(A) < $unsigned(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = (DSPsub[31]);
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = !(DSPsub[31]);
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = !(carry);
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = (carry);
 
 			default:					Branch_Enable = 1'b0;
 		endcase

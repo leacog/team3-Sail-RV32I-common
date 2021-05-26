@@ -42,28 +42,19 @@
 
 
 
-module instruction_memory_bram (clk, addr, write_data, memwrite, memread, read_data);
+module instruction_memory_bram (clk, addr, read_data);
 	input clk;
 	input[31:0] addr;
-	input[31:0] write_data;
-	input memwrite, memread;
 	output reg[31:0] read_data;
 	
-	reg[31:0] datamem[1023:0];
-	
-	//BRAM implementation
+	reg[31:0] insmem[1023:0];
 	
 	initial begin
 		$readmemh("verilog/program.hex", datamem);
 	end
 	
 	always @(posedge clk) begin
-		if(memwrite==1'b1) begin
-			datamem[addr] <= write_data;
-		end
-		if(memread==1'b1) begin
-			read_data <= datamem[addr];
-		end
+		read_data <= insmem[addr >> 2];
 	end
 
 endmodule

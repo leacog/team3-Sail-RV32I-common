@@ -1,25 +1,20 @@
 /*
 	Authored 2018-2019, Ryan Voo.
-
 	All rights reserved.
 	Redistribution and use in source and binary forms, with or without
 	modification, are permitted provided that the following conditions
 	are met:
-
 	*	Redistributions of source code must retain the above
 		copyright notice, this list of conditions and the following
 		disclaimer.
-
 	*	Redistributions in binary form must reproduce the above
 		copyright notice, this list of conditions and the following
 		disclaimer in the documentation and/or other materials
 		provided with the distribution.
-
 	*	Neither the name of the author nor the names of its
 		contributors may be used to endorse or promote products
 		derived from this software without specific prior written
 		permission.
-
 	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 	"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 	LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -54,7 +49,7 @@
  *	field is only unique across the instructions that are actually
  *	fed to the ALU.
  */
-module DSPalu(ALUctl, A, B, ALUOut, Branch_Enable);
+module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	input [6:0]		ALUctl;
 	input [31:0]		A;
 	input [31:0]		B;
@@ -63,6 +58,7 @@ module DSPalu(ALUctl, A, B, ALUOut, Branch_Enable);
 
 	wire [31:0] DSPadd; //Wire to connect to DSP sum
 	wire [31:0] DSPsub; //Wire to connect to DSP subraction result
+	wire carry;
 
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
@@ -88,10 +84,11 @@ module DSPalu(ALUctl, A, B, ALUOut, Branch_Enable);
 	DSPsubtractor alu_subbtractor(
 			.input1(A),
 			.input2(B),
-			.out(DSPsub)
+			.out(DSPsub),
+			.carry(carry)
 		);
 
-	always @(ALUctl, A, B) begin
+	always @(ALUctl, A, B, DSPadd, DSPsub) begin
 		case (ALUctl[3:0])
 			/*
 			 *	AND (the fields also match ANDI and LUI)
@@ -116,7 +113,7 @@ module DSPalu(ALUctl, A, B, ALUOut, Branch_Enable);
 			/*
 			 *	SLT (the fields also matches all the other SLT variants)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
+			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = DSPsub[31] ? 32'b1 : 32'b0;
 
 			/*
 			 *	SRL (the fields also matches the other SRL variants)
@@ -160,14 +157,14 @@ module DSPalu(ALUctl, A, B, ALUOut, Branch_Enable);
 		endcase
 	end
 
-	always @(ALUctl, ALUOut, A, B) begin
+	always @(ALUctl, ALUOut, A, B, DSPsub, carry) begin
 		case (ALUctl[6:4])
 			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:	Branch_Enable = (ALUOut == 0);
 			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:	Branch_Enable = !(ALUOut == 0);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = ($signed(A) < $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = ($signed(A) >= $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = ($unsigned(A) < $unsigned(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = (DSPsub[31]);
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = !(DSPsub[31]);
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = !(carry);
+			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = (carry);
 
 			default:					Branch_Enable = 1'b0;
 		endcase

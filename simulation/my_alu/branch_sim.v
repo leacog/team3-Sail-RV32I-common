@@ -13,7 +13,7 @@ module top();
 	reg[6:0] Opcode;
 
 	//alu aluctl interface
-	wire[6:0] AluCtl_wire;
+	reg[6:0] AluCtl_wire;
 
 	alu alu_inst(
 		.ALUctl(AluCtl_wire),

@@ -42,16 +42,16 @@
 
 
 
-module instruction_memory_bram (clk, addr, read_data, clk_stall);
+module instruction_memory_bram (clk, addr, out, clk_stall);
 	input clk;
 	input[31:0] addr;
-	output reg[31:0] read_data;
+	output reg[31:0] out;
 	output reg clk_stall;
 	
 	reg[31:0] insmem[0:1023];
 	
 	reg new_read; //1 if new address in the line, 0 otherwise
-	reg[31:0] addr_buf //Not sure if this is needed as address 
+	reg[31:0] addr_buf; //Not sure if this is needed as address 
 											// shouldn't change after stall is asserted
 
 	integer state = 0;
@@ -59,7 +59,7 @@ module instruction_memory_bram (clk, addr, read_data, clk_stall);
 	parameter READ = 1;
 
 	initial begin
-		$readmemh("verilog/program.hex", insmem);
+		$readmemh("../../verilog/program.hex", insmem);
 		clk_stall = 0;
 		new_read = 1;
 	end
@@ -77,9 +77,10 @@ module instruction_memory_bram (clk, addr, read_data, clk_stall);
 					state <= READ;
 					clk_stall <= 1'b1;
 				end
+			end
 			READ: begin
 				clk_stall <= 1'b0;
-				read_data <= insmem[addr_buf >> 2];
+				out <= insmem[addr_buf >> 2];
 				new_read <= 1'b0;
 				state <= IDLE;
 			end

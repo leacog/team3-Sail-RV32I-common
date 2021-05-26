@@ -88,7 +88,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 
 
 
-	always @(ALUctl, A, B) begin
+	always @(ALUctl, A, B,DSPadd,DSPsub) begin
 		case (ALUctl[3:0])
 			/*
 			 *	AND (the fields also match ANDI and LUI)

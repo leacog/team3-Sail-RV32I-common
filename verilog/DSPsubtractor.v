@@ -45,7 +45,7 @@
 
 
 
-module DSPsubtractor(input1, input2, out); // out = input1 - input2
+module DSPsubtractor(input1, input2, out,carry); // out = input1 - input2
 	//Input and output should remain the same to perserve interface, need to change the add operation.
 	input [31:0]	input1;
 	input [31:0]	input2;

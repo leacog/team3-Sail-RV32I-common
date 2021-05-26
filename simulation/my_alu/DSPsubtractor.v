@@ -45,11 +45,12 @@
 
 
 
-module DSPsubtractor(input1, input2, out); // out = input1 - input2
+module DSPsubtractor(input1, input2, out,carry); // out = input1 - input2
 	//Input and output should remain the same to perserve interface, need to change the add operation.
 	input [31:0]	input1;
 	input [31:0]	input2;
 	output [31:0]	out;
+	output carry;
 
 	SB_MAC16 i_sbmac16 ( 		
 		//Taken directly from SBTICE datasheet - defines connection to, from and inside DSP block
@@ -74,7 +75,7 @@ module DSPsubtractor(input1, input2, out); // out = input1 - input2
 		.OLOADBOT(1'b0),
 		.ADDSUBTOP(1'b1), 				// 0 for add, 1 for sub
 		.ADDSUBBOT(1'b1),				// --||--
-		.CO(),         				// Carry output, could be used to indicate overflow in the future
+		.CO(carry),         				// Carry output, use for compare unsign number
 		.CI(1'b0),								// Carry input to lower adder, set to zero
 		.ACCUMCI(1'b0),					// Could be used for feedback? implementing other logic functions?
 		.ACCUMCO(),						// Top accumulator output - not connected

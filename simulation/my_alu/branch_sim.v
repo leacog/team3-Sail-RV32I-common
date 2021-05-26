@@ -80,7 +80,7 @@ initial begin
  	//simulate BGEU instuction
  	A = 32'b10000;
  	B = 32'b10;
- 	AluCtl_wire[6:4] =`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU
+ 	AluCtl_wire[6:4] =`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU;
 
  	#5
 

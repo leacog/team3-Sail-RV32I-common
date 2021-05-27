@@ -183,7 +183,7 @@ module cpu_v2(
 		);
 
 	DSPadder pc_adder(
-			.input1(32'b01),
+			.input1(32'b100),
 			.input2(pc_out),
 			.out(pc_adder_out)
 		);

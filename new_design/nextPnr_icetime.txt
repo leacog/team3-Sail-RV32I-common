@@ -1316,3 +1316,6 @@ Resolvable net names on path:
 
 Total number of logic levels: 31
 Total path delay: 82.68 ns (12.09 MHz)
+
+Before ALU
+ALU 19.204

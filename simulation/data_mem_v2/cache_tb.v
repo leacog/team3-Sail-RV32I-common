@@ -25,7 +25,7 @@ module cache_tb();
 
 	//simulation
 	always
-	 #2 clk = ~clk;
+	 #1 clk = ~clk;
 
 	initial begin
 		$dumpfile ("cache.vcd");

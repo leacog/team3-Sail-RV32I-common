@@ -252,8 +252,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				memwrite_buf <= memwrite;
 				clk_stall <= 0;
 				word_buf = data_block[addr_buf_block_addr];
+				if (memread==1'b1) begin
 				read_data = read_buf;
-				if(memwrite==1'b1) begin
+				end
+				else if(memwrite==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;
 				end

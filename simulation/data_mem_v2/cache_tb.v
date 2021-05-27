@@ -34,65 +34,65 @@ module cache_tb();
 	 	#5
 
 	 	//write byte
-	 	addr = 32'b10000000000;
-		write_val = 32'b101010101010;
-		memwrite = 1'b1;
-		memread = 1'b0;
-		sign_mask = 4'b0001;
+	 	addr <= 32'b10000000000;
+		write_val <= 32'b101010101010;
+		memwrite <= 1'b1;
+		memread <= 1'b0;
+		sign_mask <= 4'b0001;
 
 	 	#2
 
 	 	//rest
-	 	addr = 32'b10000000000;
-		write_val = 32'b101010101010;
-		memwrite = 1'b0;
-		memread = 1'b0;
-		sign_mask = 4'b0001;
+	 	addr <= 32'b10000000000;
+		write_val <= 32'b101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b0;
+		sign_mask <= 4'b0001;
 
 	 	#20
 
 	 	//read signed byte
-	 	addr = 32'b10000000000;
-		write_val = 32'b101010101010;
-		memwrite = 1'b0;
-		memread = 1'b1;
-		sign_mask = 4'b1001;
+	 	addr <= 32'b10000000000;
+		write_val <= 32'b101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b1;
+		sign_mask <= 4'b1001;
 
 	 	#2
 
 	 	//rest
-	 	addr = 32'b10000000000;
-		write_val = 32'b101010101010;
-		memwrite = 1'b0;
-		memread = 1'b0;
-		sign_mask = 4'b1001;
+	 	addr <= 32'b10000000000;
+		write_val <= 32'b101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b0;
+		sign_mask <= 4'b1001;
 
 	 	#20
 
 	 	//read unsigned byte
-	 	addr = 32'b10000000000;
-		write_val = 32'b101010101010;
-		memwrite = 1'b0;
-		memread = 1'b1;
-		sign_mask = 4'b0001;
+	 	addr <= 32'b10000000000;
+		write_val <= 32'b101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b1;
+		sign_mask <= 4'b0001;
 
 		#2
 
 	 	//rest
-	 	addr = 32'b10000000000;
-		write_val = 32'b101010101010;
-		memwrite = 1'b0;
-		memread = 1'b0;
-		sign_mask = 4'b0001;
+	 	addr <= 32'b10000000000;
+		write_val <= 32'b101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b0;
+		sign_mask <= 4'b0001;
 
 	 	#20
 
 	 	//write halfword
-	 	addr = 32'b100000000;
-		write_val = 32'b101010101010101010;
-		memwrite = 1'b1;
-		memread = 1'b0;
-		sign_mask = 4'b0011;
+	 	addr <= 32'b100000000;
+		write_val <= 32'b101010101010101010;
+		memwrite <= 1'b1;
+		memread <= 1'b0;
+		sign_mask <= 4'b0011;
 
 		#2
 
@@ -106,11 +106,11 @@ module cache_tb();
 		#20
 
 	 	//read signed halfword
-	 	addr = 32'b100000000;
-		write_val = 32'b101010101010101010;
-		memwrite = 1'b0;
-		memread = 1'b1;
-		sign_mask = 4'b1011;
+	 	addr <= 32'b100000000;
+		write_val <= 32'b101010101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b1;
+		sign_mask <= 4'b1011;
 
 		#2
 

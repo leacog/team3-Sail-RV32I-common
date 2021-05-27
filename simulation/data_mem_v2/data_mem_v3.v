@@ -264,11 +264,9 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				else if(memwrite_buf == 1'b1) begin
-					data_block[addr_buf_block_addr] <= replacement_word;
-					state <= IDLE;
-					clk_stall <= 0;
-				end
+				data_block[addr_buf_block_addr] <= replacement_word;
+				state <= IDLE;
+				clk_stall <= 0;
 			end
 
 		endcase

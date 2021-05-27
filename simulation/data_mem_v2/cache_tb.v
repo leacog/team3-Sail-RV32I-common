@@ -10,7 +10,7 @@ module cache_tb();
 	wire [7:0] led;
 	wire clk_stall;
 
-	data_mem_v2 cache_inst(
+	data_mem cache_inst(
 		.clk(clk),
 		.addr(addr),
 		.write_data(write_val),

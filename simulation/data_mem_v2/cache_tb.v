@@ -25,7 +25,7 @@ module cache_tb();
 
 	//simulation
 	always
-	 #1 clk = ~clk;
+	 #2 clk = ~clk;
 
 	initial begin
 		$dumpfile ("cache.vcd");
@@ -97,11 +97,11 @@ module cache_tb();
 		#2
 
 	 	//rest
-	 	addr = 32'b100000000;
-		write_val = 32'b101010101010101010;
-		memwrite = 1'b0;
-		memread = 1'b0;
-		sign_mask = 4'b0011;
+	 	addr <= 32'b100000000;
+		write_val <= 32'b101010101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b0;
+		sign_mask <= 4'b0011;
 
 		#20
 
@@ -115,47 +115,47 @@ module cache_tb();
 		#2
 
 	 	//rest
-	 	addr = 32'b100000000;
-		write_val = 32'b101010101010101010;
-		memwrite = 1'b0;
-		memread = 1'b0;
-		sign_mask = 4'b1011;
+	 	addr <= 32'b100000000;
+		write_val <= 32'b101010101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b0;
+		sign_mask <= 4'b1011;
 
 		#20
 
 	 	//read unsigned halfword
-	 	addr = 32'b100000000;
-		write_val = 32'b101010101010101010;
-		memwrite = 1'b0;
-		memread = 1'b1;
-		sign_mask = 4'b0011;
+	 	addr <= 32'b100000000;
+		write_val <= 32'b101010101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b1;
+		sign_mask <= 4'b0011;
 
 		#2
 
 	 	//rest
-	 	addr = 32'b100000000;
-		write_val = 32'b101010101010101010;
-		memwrite = 1'b0;
-		memread = 1'b0;
-		sign_mask = 4'b0011;
+	 	addr <= 32'b100000000;
+		write_val <= 32'b101010101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b0;
+		sign_mask <= 4'b0011;
 
 	 	#20
 
 	 	//write word
-	 	addr = 32'b1000000;
-		write_val = 32'b10101010101010101010101010101010;
-		memwrite = 1'b1;
-		memread = 1'b0;
-		sign_mask = 4'b0111;
+	 	addr <= 32'b1000000;
+		write_val <= 32'b10101010101010101010101010101010;
+		memwrite <= 1'b1;
+		memread <= 1'b0;
+		sign_mask <= 4'b0111;
 
 		#2
 
 	 	//rest
-	 	addr = 32'b1000000;
-		write_val = 32'b10101010101010101010101010101010;
-		memwrite = 1'b0;
-		memread = 1'b0;
-		sign_mask = 4'b0111;
+	 	addr <= 32'b1000000;
+		write_val <= 32'b10101010101010101010101010101010;
+		memwrite <= 1'b0;
+		memread <= 1'b0;
+		sign_mask <= 4'b0111;
 
 		#20
 

@@ -251,7 +251,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				memread_buf <= memread;
 				memwrite_buf <= memwrite;
 				clk_stall <= 0;
-				word_buf <= data_block[addr_buf_block_addr[11:2] - 32'h1000];
+				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
 				if(memwrite==1'b1 || memread==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;

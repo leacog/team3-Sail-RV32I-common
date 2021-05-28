@@ -269,9 +269,9 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin	
-				addr_byte_offset_buf_read <= addr_buf[1:0];
 				clk_stall <= 0;
 				if(memread_buf==1'b1)begin
+					addr_byte_offset_buf_read <= addr_buf[1:0];
 					sign_mask_buf <= sign_mask;
 					word_buf_output <= data_block[addr_buf_block_addr];
 				end

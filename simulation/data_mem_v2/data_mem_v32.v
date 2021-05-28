@@ -72,7 +72,6 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	Line buffer
 	 */
 	reg [31:0]		word_buf_output;
-	reg [31:0]		word_buf_input;
 
 	/*
 	 *	Read buffer
@@ -119,19 +118,6 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 
 	assign			addr_buf_block_addr	= addr_buf[11:2];
 	assign			addr_buf_byte_offset = addr_buf[1:0]; 
-
-	/*
-	 *	Regs for multiplexer output
-	 */
-	wire [7:0]		buf0;
-	wire [7:0]		buf1;
-	wire [7:0]		buf2;
-	wire [7:0]		buf3;
-
-	assign 			buf0	= word_buf_input[7:0];
-	assign 			buf1	= word_buf_input[15:8];
-	assign 			buf2	= word_buf_input[23:16];
-	assign 			buf3	= word_buf_input[31:24];
 
 	/*
 	 *	Byte select decoder

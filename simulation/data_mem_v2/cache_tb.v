@@ -24,6 +24,7 @@ module cache_tb();
 
 
 	//simulation
+	//in this test bench, all input signals are assume to be ready before the rise of clock
 	always
 	 #2 clk = ~clk;
 
@@ -45,11 +46,11 @@ module cache_tb();
 	 	#2
 
 	 	//rest
-	 	addr <= 32'b10000000000;
-		write_val <= 32'b101010101010;
+	 	addr <= 32'b0000000;
+		write_val <= 32'b00;
 		memwrite <= 1'b0;
 		memread <= 1'b0;
-		sign_mask <= 4'b0001;
+		sign_mask <= 4'b000;
 
 	 	#22
 
@@ -63,11 +64,11 @@ module cache_tb();
 	 	#2
 
 	 	//rest
-	 	addr <= 32'b10000000000;
-		write_val <= 32'b101010101010;
+	 	addr <= 32'b0000000;
+		write_val <= 32'b00;
 		memwrite <= 1'b0;
 		memread <= 1'b0;
-		sign_mask <= 4'b1001;
+		sign_mask <= 4'b000;
 
 	 	#18
 

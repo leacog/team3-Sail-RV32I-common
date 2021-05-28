@@ -260,7 +260,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				read_data = read_buf;
 				end
 				state = IDLE;
-				else if(memwrite_buf==1'b1) begin
+				if(memwrite_buf==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;
 				end

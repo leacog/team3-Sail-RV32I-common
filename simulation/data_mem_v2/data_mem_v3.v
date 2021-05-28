@@ -240,13 +240,11 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 */
 
 	always @(addr,write_data,sign_mask)begin
-		if (!clk)begin
 			write_data_buffer <= write_data;
 			addr_buf <= addr;
 			sign_mask_buf <= sign_mask;
 			memread_buf <= memread;
 			memwrite_buf <= memwrite;
-		end
 	end
 
 	always @(posedge clk) begin
@@ -254,10 +252,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 			IDLE: begin	
 				clk_stall <= 0;
 				word_buf = data_block[addr_buf_block_addr];
-				if (memread==1'b1) begin
+				if (memread_buf==1'b1) begin
 				read_data = read_buf;
 				end
-				else if(memwrite==1'b1) begin
+				else if(memwrite_buf==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;
 				end

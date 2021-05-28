@@ -239,12 +239,14 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	State machine
 	 */
 
-	always @(addr,write_data,sign_mask,memread,memwrite)begin
+	always @(*)begin
+		if (state==IDLE)begin
 			write_data_buffer <= write_data;
 			addr_buf <= addr;
 			sign_mask_buf <= sign_mask;
 			memread_buf <= memread;
 			memwrite_buf <= memwrite;
+		end
 	end
 
 	always @(posedge clk) begin

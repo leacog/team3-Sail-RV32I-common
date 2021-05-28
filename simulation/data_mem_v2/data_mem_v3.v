@@ -207,7 +207,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire[31:0] out2;
 	wire[31:0] out3;
 	wire[31:0] out4;
-	wire[31:0] out5;
+	wire[31:0] out5; 
 	wire[31:0] out6;
 	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0]
 	 * d is addr_buf_byte_offset[1], e is addr_buf_byte_offset[0]
@@ -219,13 +219,13 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	
 	assign out1 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{rbuf1[7]}}, rbuf1} : {24'b0, rbuf1}) : ((sign_mask_buf[3]==1'b1) ? {{24{rbuf0[7]}}, rbuf0} : {24'b0, rbuf0});
 	assign out2 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{rbuf3[7]}}, rbuf3} : {24'b0, rbuf3}) : ((sign_mask_buf[3]==1'b1) ? {{24{rbuf2[7]}}, rbuf2} : {24'b0, rbuf2}); 
-	assign out3 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{16{rbuf3[7]}}, rbuf3, rbuf2} : {16'b0, rbuf3, rbuf2}) : ((sign_mask_buf[3]==1'b1) ? {{16{buf1[7]}}, rbuf1, rbuf0} : {16'b0, rbuf1, rbuf0});
+	assign out3 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{16{rbuf3[7]}}, rbuf3, rbuf2} : {16'b0, rbuf3, rbuf2}) : ((sign_mask_buf[3]==1'b1) ? {{16{rbuf1[7]}}, rbuf1, rbuf0} : {16'b0, rbuf1, rbuf0});
 	assign out4 = (select0) ? 32'b0 : {rbuf3, rbuf2, rbuf1, rbuf0};
 	
 	assign out5 = (select1) ? out2 : out1;
 	assign out6 = (select1) ? out4 : out3;
 	
-	assign read_data = (select2) ? out6 : out5;
+	assign read_data = (select2) ? out6 : out5; 
 	
 	/*
 	 *	This uses Yosys's support for nonzero initial values:

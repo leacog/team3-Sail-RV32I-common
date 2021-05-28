@@ -35,7 +35,7 @@ module cache_tb();
 		memread <= 1'b0;
 	 	#5
 
-	 	//write byte
+	 	//write byte1
 	 	addr <= 32'b10000000000;
 		write_val <= 32'b101010101010;
 		memwrite <= 1'b1;
@@ -53,7 +53,7 @@ module cache_tb();
 
 	 	#22
 
-	 	//read signed byte
+	 	//read signed byte2
 	 	addr <= 32'b10000000000;
 		write_val <= 32'b101010101010;
 		memwrite <= 1'b0;
@@ -71,7 +71,7 @@ module cache_tb();
 
 	 	#18
 
-	 	//read unsigned byte
+	 	//read unsigned byte3
 	 	addr <= 32'b10000000000;
 		write_val <= 32'b101010101010;
 		memwrite <= 1'b0;
@@ -89,7 +89,7 @@ module cache_tb();
 
 	 	#22
 
-	 	//write halfword
+	 	//write halfword4
 	 	addr <= 32'b100000000;
 		write_val <= 32'b101010101010101010;
 		memwrite <= 1'b1;
@@ -105,9 +105,9 @@ module cache_tb();
 		memread <= 1'b0;
 		sign_mask <= 4'b0011;
 
-		#20
+		#18
 
-	 	//read signed halfword
+	 	//read signed halfword 5
 	 	addr <= 32'b100000000;
 		write_val <= 32'b101010101010101010;
 		memwrite <= 1'b0;

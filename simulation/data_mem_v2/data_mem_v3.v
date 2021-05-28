@@ -253,9 +253,9 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin	
-				sign_mask_buf <= sign_mask;
 				clk_stall <= 0;
 				if(memwrite_buf==1'b1 || memread_buf==1'b1)begin
+					sign_mask_buf <= sign_mask;
 					word_buf <= data_block[addr_buf_block_addr];
 					if(memwrite_buf==1'b1) begin
 						state <= READ_WRITE_BUFFER;

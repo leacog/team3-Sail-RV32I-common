@@ -249,18 +249,18 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		end
 	end
 
+	assign read_data <= (memread_buf==1'b1)? read_buf : read_data;
 
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin	
 				clk_stall <= 0;
-				word_buf = data_block[addr_buf_block_addr];
-				if (memread_buf==1'b1) begin
-				read_data = read_buf;
-				end
-				else if(memwrite_buf==1'b1) begin
-					state <= READ_WRITE_BUFFER;
-					clk_stall <= 1;
+				if(memwrite_buf==1'b1 || memread_buf==1'b1)begin
+					word_buf = data_block[addr_buf_block_addr];
+					if(memwrite_buf==1'b1) begin
+						state <= READ_WRITE_BUFFER;
+						clk_stall <= 1;
+					end
 				end
 			end
 

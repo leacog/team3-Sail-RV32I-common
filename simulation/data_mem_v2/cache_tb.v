@@ -69,7 +69,7 @@ module cache_tb();
 		memread <= 1'b0;
 		sign_mask <= 4'b1001;
 
-	 	#20
+	 	#18
 
 	 	//read unsigned byte
 	 	addr <= 32'b10000000000;
@@ -87,7 +87,7 @@ module cache_tb();
 		memread <= 1'b0;
 		sign_mask <= 4'b0001;
 
-	 	#22
+	 	#23
 
 	 	//write halfword
 	 	addr <= 32'b100000000;
@@ -105,7 +105,7 @@ module cache_tb();
 		memread <= 1'b0;
 		sign_mask <= 4'b0011;
 
-		#20
+		#21
 
 	 	//read signed halfword
 	 	addr <= 32'b100000000;
@@ -141,7 +141,7 @@ module cache_tb();
 		memread <= 1'b0;
 		sign_mask <= 4'b0011;
 
-	 	#20
+	 	#21
 
 	 	//write word
 	 	addr <= 32'b1000000;

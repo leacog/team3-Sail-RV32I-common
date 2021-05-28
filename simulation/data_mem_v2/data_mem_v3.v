@@ -210,7 +210,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	assign out5 = (select1) ? out2 : out1;
 	assign out6 = (select1) ? out4 : out3;
 	
-	assign read_buf = (select2) ? out6 : out5;
+	assign read_data = (select2) ? out6 : out5;
 	
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
@@ -250,12 +250,6 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		end
 	end
 
-	always @(negedge clk) begin
-		if(memread_buf==1'b1) begin
-			read_data <= word_buf;
-		end
-	end
-	
 
 
 	always @(posedge clk) begin

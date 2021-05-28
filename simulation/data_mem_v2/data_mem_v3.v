@@ -240,16 +240,18 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 */
 
 	always @(addr,write_data,sign_mask)begin
-		write_data_buffer <= write_data;
-		addr_buf <= addr;
-		sign_mask_buf <= sign_mask;
+		if (!clk)begin
+			write_data_buffer <= write_data;
+			addr_buf <= addr;
+			sign_mask_buf <= sign_mask;
+			memread_buf <= memread;
+			memwrite_buf <= memwrite;
+		end
 	end
 
 	always @(posedge clk) begin
 		case (state)
-			IDLE: begin
-				memread_buf <= memread;
-				memwrite_buf <= memwrite;
+			IDLE: begin	
 				clk_stall <= 0;
 				word_buf = data_block[addr_buf_block_addr];
 				if (memread==1'b1) begin

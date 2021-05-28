@@ -31,6 +31,8 @@ module cache_tb();
 		$dumpfile ("cache.vcd");
 	 	$dumpvars;
 
+		memwrite <= 1'b0;
+		memread <= 1'b0;
 	 	#5
 
 	 	//write byte

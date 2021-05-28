@@ -45,7 +45,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	input			memwrite;
 	input			memread;
 	input [3:0]		sign_mask;
-	output reg [31:0]	read_data;
+	output [31:0]	read_data;
 	output [7:0]		led;
 	output reg		clk_stall;	//Sets the clock high
 
@@ -210,7 +210,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	assign out5 = (select1) ? out2 : out1;
 	assign out6 = (select1) ? out4 : out3;
 	
-	assign read_buf = (select2) ? out6 : out5;
+	assign read_data = (select2) ? out6 : out5;
 	
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
@@ -246,13 +246,6 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 			memread_buf <= memread;
 			memwrite_buf <= memwrite;
 			write_data_buffer <= write_data;
-			sign_mask_buf <= sign_mask;
-		end
-	end
-
-	always @(negedge clk) begin
-		if(memread_buf==1'b1) begin
-			read_data <= read_buf;
 		end
 	end
 	
@@ -261,6 +254,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin	
+				sign_mask_buf <= sign_mask;
 				clk_stall <= 0;
 				if(memwrite_buf==1'b1 || memread_buf==1'b1)begin	
 					word_buf <= data_block[addr_buf_block_addr];

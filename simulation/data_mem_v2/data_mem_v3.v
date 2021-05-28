@@ -98,6 +98,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	Sign_mask buffer
 	 */
 	reg [3:0]		sign_mask_buf;
+	reg [3:0]		sign_mask_buf2;
 
 	/*
 	 *	Block memory registers
@@ -173,8 +174,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire[31:0] write_out1;
 	wire[31:0] write_out2;
 	
-	assign write_select0 = ~sign_mask_buf[2] & sign_mask_buf[1];
-	assign write_select1 = sign_mask_buf[2];
+	assign write_select0 = ~sign_mask_buf2[2] & sign_mask_buf2[1];
+	assign write_select1 = sign_mask_buf2[2];
 	
 	assign write_out1 = (write_select0) ? {halfword_r1, halfword_r0} : {byte_r3, byte_r2, byte_r1, byte_r0};
 	assign write_out2 = (write_select0) ? 32'b0 : write_data_buffer;
@@ -242,9 +243,9 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	always @(*)begin
 		if (state==IDLE)begin
 			addr_buf <= addr;
-			sign_mask_buf <= sign_mask;
 			memread_buf <= memread;
 			memwrite_buf <= memwrite;
+			sign_mask_buf <= sign_mask;
 		end
 	end
 
@@ -253,14 +254,14 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		case (state)
 			IDLE: begin	
 				write_data_buffer <= write_data;
+				sign_mask_buf2 <=sign_mask_buf; //use sign_mask_buf2 to mask the write data.prevent change in sign_mask
 				clk_stall <= 0;
+
 				word_buf = data_block[addr_buf_block_addr];
-				state = READ_WRITE_BUFFER;
 				if (memread_buf==1'b1) begin
 				read_data = read_buf;
 				end
-				state = IDLE;
-				if(memwrite_buf==1'b1) begin
+				else if(memwrite_buf==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;
 				end

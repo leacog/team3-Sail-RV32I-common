@@ -71,7 +71,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	Line buffer
 	 */
-	reg [31:0]		word_buf;
+	reg [31:0]		word_buf_output;
+	reg [31:0]		word_buf_input;
 
 	/*
 	 *	Read buffer
@@ -93,10 +94,12 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	Buffer to store address
 	 */
 	reg [31:0]		addr_buf;
+	reg [1:0]		addr_byte_offset_buf_read; 
 
 	/*
 	 *	Sign_mask buffer
 	 */
+	reg [3:0]		sign_mask_buf_input;
 	reg [3:0]		sign_mask_buf;
 
 	/*
@@ -115,7 +118,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire [31:0]		replacement_word;
 
 	assign			addr_buf_block_addr	= addr_buf[11:2];
-	assign			addr_buf_byte_offset	= addr_buf[1:0];
+	assign			addr_buf_byte_offset = addr_buf[1:0]; 
 
 	/*
 	 *	Regs for multiplexer output
@@ -125,10 +128,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire [7:0]		buf2;
 	wire [7:0]		buf3;
 
-	assign 			buf0	= word_buf[7:0];
-	assign 			buf1	= word_buf[15:8];
-	assign 			buf2	= word_buf[23:16];
-	assign 			buf3	= word_buf[31:24];
+	assign 			buf0	= word_buf_input[7:0];
+	assign 			buf1	= word_buf_input[15:8];
+	assign 			buf2	= word_buf_input[23:16];
+	assign 			buf3	= word_buf_input[31:24];
 
 	/*
 	 *	Byte select decoder
@@ -173,16 +176,28 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire[31:0] write_out1;
 	wire[31:0] write_out2;
 	
-	assign write_select0 = ~sign_mask_buf[2] & sign_mask_buf[1];
-	assign write_select1 = sign_mask_buf[2];
+	assign write_select0 = ~sign_mask_buf_input[2] & sign_mask_buf_input[1];
+	assign write_select1 = sign_mask_buf_input[2];
 	
 	assign write_out1 = (write_select0) ? {halfword_r1, halfword_r0} : {byte_r3, byte_r2, byte_r1, byte_r0};
 	assign write_out2 = (write_select0) ? 32'b0 : write_data_buffer;
 	
 	assign replacement_word = (write_select1) ? write_out2 : write_out1;
+
+
 	/*
 	 *	Combinational logic for generating 32-bit read data
 	 */
+
+	wire [7:0]		rbuf0;
+	wire [7:0]		rbuf1;
+	wire [7:0]		rbuf2;
+	wire [7:0]		rbuf3;
+
+	assign 			rbuf0	= word_buf_output[7:0];
+	assign 			rbuf1	= word_buf_output[15:8];
+	assign 			rbuf2	= word_buf_output[23:16];
+	assign 			rbuf3	= word_buf_output[31:24];
 	
 	wire select0;
 	wire select1;
@@ -198,14 +213,14 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 * d is addr_buf_byte_offset[1], e is addr_buf_byte_offset[0]
 	 */
 	
-	assign select0 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & ~addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & addr_buf_byte_offset[1] & addr_buf_byte_offset[0]) | (~sign_mask_buf[2] & sign_mask_buf[1] & addr_buf_byte_offset[1]); //~a~b~de + ~ade + ~abd
-	assign select1 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & addr_buf_byte_offset[1]) | (sign_mask_buf[2] & sign_mask_buf[1]); // ~a~bd + ab
+	assign select0 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & ~addr_byte_offset_buf_read[1] & addr_byte_offset_buf_read[0]) | (~sign_mask_buf[2] & addr_byte_offset_buf_read[1] & addr_byte_offset_buf_read[0]) | (~sign_mask_buf[2] & sign_mask_buf[1] & addr_byte_offset_buf_read[1]); //~a~b~de + ~ade + ~abd
+	assign select1 = (~sign_mask_buf[2] & ~sign_mask_buf[1] & addr_byte_offset_buf_read[1]) | (sign_mask_buf[2] & sign_mask_buf[1]); // ~a~bd + ab
 	assign select2 = sign_mask_buf[1]; //b
 	
-	assign out1 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf1[7]}}, buf1} : {24'b0, buf1}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf0[7]}}, buf0} : {24'b0, buf0});
-	assign out2 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{buf3[7]}}, buf3} : {24'b0, buf3}) : ((sign_mask_buf[3]==1'b1) ? {{24{buf2[7]}}, buf2} : {24'b0, buf2}); 
-	assign out3 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{16{buf3[7]}}, buf3, buf2} : {16'b0, buf3, buf2}) : ((sign_mask_buf[3]==1'b1) ? {{16{buf1[7]}}, buf1, buf0} : {16'b0, buf1, buf0});
-	assign out4 = (select0) ? 32'b0 : {buf3, buf2, buf1, buf0};
+	assign out1 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{rbuf1[7]}}, rbuf1} : {24'b0, rbuf1}) : ((sign_mask_buf[3]==1'b1) ? {{24{rbuf0[7]}}, rbuf0} : {24'b0, rbuf0});
+	assign out2 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{24{rbuf3[7]}}, rbuf3} : {24'b0, rbuf3}) : ((sign_mask_buf[3]==1'b1) ? {{24{rbuf2[7]}}, rbuf2} : {24'b0, rbuf2}); 
+	assign out3 = (select0) ? ((sign_mask_buf[3]==1'b1) ? {{16{rbuf3[7]}}, rbuf3, rbuf2} : {16'b0, rbuf3, rbuf2}) : ((sign_mask_buf[3]==1'b1) ? {{16{buf1[7]}}, rbuf1, rbuf0} : {16'b0, rbuf1, rbuf0});
+	assign out4 = (select0) ? 32'b0 : {rbuf3, rbuf2, rbuf1, rbuf0};
 	
 	assign out5 = (select1) ? out2 : out1;
 	assign out6 = (select1) ? out4 : out3;
@@ -254,15 +269,19 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin	
-				sign_mask_buf <= sign_mask;
+				addr_byte_offset_buf_read <= addr_buf[1:0];
 				clk_stall <= 0;
-				if(memwrite_buf==1'b1 || memread_buf==1'b1)begin	
-					word_buf <= data_block[addr_buf_block_addr];
-					if(memwrite_buf==1'b1) begin
-						state <= READ_WRITE_BUFFER;
-						clk_stall <= 1;
-					end
+				if(memread_buf==1'b1)begin
+					sign_mask_buf <= sign_mask;
+					word_buf_output <= data_block[addr_buf_block_addr];
 				end
+				else if(memwrite_buf==1'b1) begin
+					sign_mask_buf_input <= sign_mask;
+					word_buf_input <= data_block[addr_buf_block_addr];
+					state <= READ_WRITE_BUFFER;
+					clk_stall <= 1;
+				end
+				
 			end
 
 			READ_WRITE_BUFFER: begin

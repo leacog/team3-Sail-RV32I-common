@@ -93,6 +93,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	Buffer to store address
 	 */
 	reg [31:0]		addr_buf;
+	reg [31:0]      addr_buf2;
 
 	/*
 	 *	Sign_mask buffer
@@ -112,12 +113,16 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 */
 	wire [9:0]		addr_buf_block_addr;
 	wire [1:0]		addr_buf_byte_offset;
+	wire [9:0]		addr_buf_block_addr2;
+	wire [1:0]		addr_buf_byte_offset2;
 	
 	wire [31:0]		replacement_word;
 
-	assign			addr_buf_block_addr	= addr_buf[11:2];
+	assign			addr_buf_block_addr	    = addr_buf[11:2];
 	assign			addr_buf_byte_offset	= addr_buf[1:0];
 
+	assign			addr_buf_block_addr2	= addr_buf2[11:2];
+	assign			addr_buf_byte_offset2	= addr_buf2[1:0];
 	/*
 	 *	Regs for multiplexer output
 	 */
@@ -139,10 +144,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire bdec_sig2;
 	wire bdec_sig3;
 
-	assign bdec_sig0 = (~addr_buf_byte_offset[1]) & (~addr_buf_byte_offset[0]);
-	assign bdec_sig1 = (~addr_buf_byte_offset[1]) & (addr_buf_byte_offset[0]);
-	assign bdec_sig2 = (addr_buf_byte_offset[1]) & (~addr_buf_byte_offset[0]);
-	assign bdec_sig3 = (addr_buf_byte_offset[1]) & (addr_buf_byte_offset[0]);
+	assign bdec_sig0 = (~addr_buf_byte_offset2[1]) & (~addr_buf_byte_offset2[0]);
+	assign bdec_sig1 = (~addr_buf_byte_offset2[1]) & (addr_buf_byte_offset2[0]);
+	assign bdec_sig2 = (addr_buf_byte_offset2[1]) & (~addr_buf_byte_offset2[0]);
+	assign bdec_sig3 = (addr_buf_byte_offset2[1]) & (addr_buf_byte_offset2[0]);
 
 
 	/*
@@ -254,6 +259,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		case (state)
 			IDLE: begin	
 				write_data_buffer <= write_data;
+				addr_buf2 <= addr_buf;
 				sign_mask_buf2 <=sign_mask_buf; //use sign_mask_buf2 to mask the write data.prevent change in sign_mask
 				clk_stall <= 0;
 
@@ -272,7 +278,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				data_block[addr_buf_block_addr] <= replacement_word;
+				data_block[addr_buf_block_addr2] <= replacement_word;
 				state <= IDLE;
 				clk_stall <= 0;
 			end

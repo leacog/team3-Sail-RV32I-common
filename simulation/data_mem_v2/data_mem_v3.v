@@ -238,6 +238,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	State machine
 	 */
+	
 
 	always @(*)begin
 		if (state==IDLE)begin
@@ -245,17 +246,23 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 			memread_buf <= memread;
 			memwrite_buf <= memwrite;
 			write_data_buffer <= write_data;
+			sign_mask_buf <= sign_mask;
 		end
 	end
 
-	assign read_data = read_buf;
+	always @(negedge clk) begin
+		if(memread_buf==1'b1) begin
+			read_data <= word_buf;
+		end
+	end
+	
+
 
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin	
 				clk_stall <= 0;
-				if(memwrite_buf==1'b1 || memread_buf==1'b1)begin
-					sign_mask_buf <= sign_mask;
+				if(memwrite_buf==1'b1 || memread_buf==1'b1)begin	
 					word_buf <= data_block[addr_buf_block_addr];
 					if(memwrite_buf==1'b1) begin
 						state <= READ_WRITE_BUFFER;

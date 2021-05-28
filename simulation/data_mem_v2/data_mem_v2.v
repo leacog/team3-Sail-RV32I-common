@@ -47,7 +47,6 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	input [3:0]		sign_mask;
 	output reg [31:0]	read_data;
 	output [7:0]		led;
-	output reg		clk_stall;	//Sets the clock high
 
 	/*
 	 *	led register

@@ -249,7 +249,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		end
 	end
 
-	assign read_data <= (memread_buf==1'b1)? read_buf : read_data;
+	assign read_data = read_buf;
 
 	always @(posedge clk) begin
 		case (state)

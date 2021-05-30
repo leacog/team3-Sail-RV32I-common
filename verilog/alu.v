@@ -123,19 +123,19 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			/*
 			 *	SLL (the fields also match the other SLL variants)
 			 */
-			`ifdef SLL
+			`ifdef ALU_SLL
 				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLL:	ALUOut = A << B[4:0];
 			`endif
 			/*
 			 *	XOR (the fields also match other XOR variants)
 			 */
-			`ifdef XOR
+			`ifdef ALU_XOR
 				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:	ALUOut = A ^ B;
 			`endif
 			/*
 			 *	CSRRW  only
 			 */
-			`ifdef CSRRW
+			`ifdef ALU_CSRRW
 				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW:	ALUOut = A;
 			`endif
 			/*
@@ -177,7 +177,7 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			`ifdef ALU_BGEU
 				`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
 			`endif
-			
+
 			default:					Branch_Enable = 1'b0;
 		endcase
 	end

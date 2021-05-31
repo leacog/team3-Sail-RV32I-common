@@ -38,7 +38,7 @@
 
 `include "../include/rv32i-defines.v"
 `include "../include/sail-core-defines.v"
-
+`include "../include/mods_to_use.v"
 
 
 /*
@@ -61,6 +61,25 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 	output reg [31:0]	ALUOut;
 	output reg		Branch_Enable;
 
+	`ifdef USE_ALU_DSP_ADDERS	
+		wire [31:0] DSPadd; //Wire to connect to DSP sum
+		DSPadder alu_adder(
+			.input1(A),
+			.input2(B),
+			.out(DSPadd)
+		);
+	`endif
+	
+	`ifdef USE_ALU_DSP_SUBTRACTOR
+		wire [31:0] DSPsub; //Wire to connect to DSP subraction result
+		wire carry;
+		DSPsubtractor alu_subbtractor(
+			.input1(A),
+			.input2(B),
+			.out(DSPsub),
+			.carry(carry)
+		);
+	`endif 
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
 	 *
@@ -75,7 +94,18 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		Branch_Enable = 1'b0;
 	end
 
-	always @(ALUctl, A, B) begin
+	`ifdef USE_ALU_DSP_ADDERS
+		`ifdef USE_ALU_DSP_SUBTRACTOR
+			always @(ALUctl, A, B, DSPadd, DSPsub) begin
+		`else
+			always @(ALUctl, A, B, DSPadd) begin
+		`endif  
+	`elsif USE_ALU_DSP_SUBTRACTOR
+			always @(ALUctl, A, B, DSPsub) begin
+	`else
+			always @(ALUctl, A, B) begin
+	`endif 
+
 		case (ALUctl[3:0])
 			/*
 			 *	AND (the fields also match ANDI and LUI)
@@ -90,18 +120,28 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			/*
 			 *	ADD (the fields also match AUIPC, all loads, all stores, and ADDI)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	ALUOut = A + B;
-
+			`ifdef USE_ALU_DSP_ADDERS
+				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	ALUOut = DSPadd;
+			`else
+				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_ADD:	ALUOut = A + B;
+			`endif
 			/*
 			 *	SUBTRACT (the fields also matches all branches)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = A - B;
 
+			`ifdef USE_ALU_DSP_SUBTRACTOR
+				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = DSPsub;
+			`else
+				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SUB:	ALUOut = A - B;
+			`endif
 			/*
 			 *	SLT (the fields also matches all the other SLT variants)
 			 */
-			`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
-
+			`ifdef USE_ALU_DSP_COMPARATOR //Need subtractor to use comparator, purpoefully gives you error for missconfiguration
+				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = DSPsub[31] ? 32'b1 : 32'b0;
+			`else
+				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_SLT:	ALUOut = $signed(A) < $signed(B) ? 32'b1 : 32'b0;
+			`endif
 			/*
 			 *	SRL (the fields also matches the other SRL variants)
 			 */
@@ -144,16 +184,35 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		endcase
 	end
 
-	always @(ALUctl, ALUOut, A, B) begin
-		case (ALUctl[6:4])
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:	Branch_Enable = (ALUOut == 0);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:	Branch_Enable = !(ALUOut == 0);
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = ($signed(A) < $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = ($signed(A) >= $signed(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = ($unsigned(A) < $unsigned(B));
-			`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
+	`ifdef USE_ALU_DSP_COMPARATOR
 
-			default:					Branch_Enable = 1'b0;
-		endcase
-	end
+		always @(ALUctl, ALUOut, A, B, DSPsub, carry) begin
+			case (ALUctl[6:4])
+				`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:	Branch_Enable = (ALUOut == 0);
+				`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:	Branch_Enable = !(ALUOut == 0);
+				`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = (DSPsub[31]);
+				`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = !(DSPsub[31]);
+				`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = !(carry);
+				`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = (carry);
+
+				default:					Branch_Enable = 1'b0;
+			endcase
+		end
+
+	`else
+		
+		always @(ALUctl, ALUOut, A, B) begin
+				case (ALUctl[6:4])
+					`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BEQ:	Branch_Enable = (ALUOut == 0);
+					`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BNE:	Branch_Enable = !(ALUOut == 0);
+					`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLT:	Branch_Enable = ($signed(A) < $signed(B));
+					`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGE:	Branch_Enable = ($signed(A) >= $signed(B));
+					`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BLTU:	Branch_Enable = ($unsigned(A) < $unsigned(B));
+					`kSAIL_MICROARCHITECTURE_ALUCTL_6to4_BGEU:	Branch_Enable = ($unsigned(A) >= $unsigned(B));
+
+					default:					Branch_Enable = 1'b0;
+				endcase
+			end
+
+	`endif 
 endmodule

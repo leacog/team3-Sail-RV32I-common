@@ -36,9 +36,9 @@
 
 
 
-`include "../include/rv32i-defines.v"
-`include "../include/sail-core-defines.v"
-`include "../include/mods_to_use.v"
+`include "sail-core/include/rv32i-defines.v"
+`include "sail-core/include/sail-core-defines.v"
+`include "sail-core/include/mods_to_use.v"
 
 
 /*

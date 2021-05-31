@@ -51,10 +51,10 @@ module instruction_memory_bram(addr, out, clk);
 	input [31:0]		addr;
 	output [31:0]		out;
 
-	reg [31:0]		instruction_memory[0:1023];
+	reg [31:0]		insmem[0:1023];
 	
 	initial begin
-		$readmemh("verilog/program.hex",instruction_memory);
+		$readmemh("verilog/program.hex",insmem);
 	end
 	
 	always @(addr) begin

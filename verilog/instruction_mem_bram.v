@@ -47,14 +47,14 @@ module instruction_memory_bram (clk, addr, out);
 	input[31:0] addr;
 	output reg[31:0] out;
 	
-	reg[31:0] insmem[0:1023];
+	reg[31:0] instruction_memory_bram[0:1023];
 	
 	reg new_read; //1 if new address in the line, 0 otherwise
 	reg[31:0] addr_buf; //Not sure if this is needed as address 
 											// shouldn't change after stall is asserted
 
 	initial begin
-		$readmemh("../../verilog/program.hex", insmem);
+		$readmemh("../../verilog/program.hex", instruction_memory_bram);
 		new_read = 1;
 	end
 	
@@ -66,7 +66,7 @@ module instruction_memory_bram (clk, addr, out);
 
 	always @(negedge clk) begin
 		if (new_read==1'b1) begin
-			out <= insmem[addr_buf >> 2];
+			out <= instruction_memory_bram[addr_buf >> 2];
 			new_read <= 1'b0;
 		end
 	end

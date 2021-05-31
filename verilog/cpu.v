@@ -40,7 +40,7 @@
  *	cpu top-level
  */
 
-`include "../include/mods_to_use.v"
+`include "sail-core/include/mods_to_use.v"
 
 module cpu(
 			clk,

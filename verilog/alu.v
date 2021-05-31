@@ -79,7 +79,17 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			.out(DSPsub),
 			.carry(carry)
 		);
-	`endif 
+	`elsif USE_ALU_DSP_COMPARATOR //Same code, verilog doesn't allow logic on ifdef statements :( 
+		wire [31:0] DSPsub; //Wire to connect to DSP subraction result
+		wire carry;
+		DSPsubtractor alu_subbtractor(
+			.input1(A),
+			.input2(B),
+			.out(DSPsub),
+			.carry(carry)
+		);
+	`endif
+
 	/*
 	 *	This uses Yosys's support for nonzero initial values:
 	 *
@@ -102,6 +112,8 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 		`endif  
 	`elsif USE_ALU_DSP_SUBTRACTOR
 			always @(ALUctl, A, B, DSPsub) begin
+	`elsif USE_ALU_DSP_COMPARATOR
+			always @(ALUctl, A, B, DSPsub) begin	
 	`else
 			always @(ALUctl, A, B) begin
 	`endif 

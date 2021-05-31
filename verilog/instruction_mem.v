@@ -47,9 +47,9 @@
 module instruction_memory_bram(addr, out, clk);
 	input clk;
 	reg new_read; 			//1 if new address in the line, 0 otherwise
-	reg[31:0] addr_buf; 		
+	reg[31:0] addr_buf;
 	input [31:0]		addr;
-	output [31:0]		out;
+	output reg [31:0]		out;
 
 	reg [31:0]		insmem[0:1023];
 	
@@ -68,7 +68,6 @@ module instruction_memory_bram(addr, out, clk);
 			new_read <= 1'b0;
 		end
 	end
-
 endmodule
 
 `else

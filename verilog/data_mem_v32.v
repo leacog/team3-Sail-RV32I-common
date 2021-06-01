@@ -81,24 +81,24 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	Buffer to identify read or write operation
 	 */
-	reg			memread_buf;
-	reg			memwrite_buf;
+	wire			memread_buf;
+	wire		    memwrite_buf;
 
 	/*
 	 *	Buffers to store write data
 	 */
-	reg [31:0]		write_data_buffer;
+	wire [31:0]		write_data_buffer;
 
 	/*
 	 *	Buffer to store address
 	 */
-	reg [31:0]		addr_buf;
+	wire [31:0]		addr_buf;
 	reg [1:0]		addr_byte_offset_buf_read; 
 
 	/*
 	 *	Sign_mask buffer
 	 */
-	reg [3:0]		sign_mask_buf_input;
+	wire [3:0]		sign_mask_buf_input;
 	reg [3:0]		sign_mask_buf;
 
 	/*
@@ -226,13 +226,11 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 */
 	
 
-	always @(*)begin
-		addr_buf <= addr;
-		memread_buf <= memread;
-		memwrite_buf <= memwrite;
-		write_data_buffer <= write_data;
-		sign_mask_buf_input <= sign_mask;
-	end
+	assign sign_mask_buf_input = sign_mask;
+	assign write_data_buffer = write_data;
+	assign memread_buf = memread;
+	assign memwrite_buf = memwrite;
+	assign addr_buf = addr;
 	
 	always @(posedge clk) begin
 		if(memread_buf==1'b1)begin

@@ -43,7 +43,7 @@
  */
 
 
-
+`ifdef CSR_REG
 module csr_file (clk, write, wrAddr_CSR, wrVal_CSR, rdAddr_CSR, rdVal_CSR);
 	input clk;
 	input write;
@@ -62,3 +62,4 @@ module csr_file (clk, write, wrAddr_CSR, wrVal_CSR, rdAddr_CSR, rdVal_CSR);
 	end
 
 endmodule
+`endif

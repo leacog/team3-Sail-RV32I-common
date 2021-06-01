@@ -62,7 +62,8 @@ FEATURES = {
         "ALU_BLT": ["BLT"],
         "ALU_BGE": ["BGE"],
         "ALU_BLTU": ["BLTU"],
-        "ALU_BGEU": ["BGEU"]
+        "ALU_BGEU": ["BGEU"],
+        "CSR_REG": ["CSRRCI", "CSRRSI", "CSRRWI", "CSRRC", "CSRRS", "CSRRW", "CSR"]
 }
 
 outfile = open("alu-subset-includes.v", "w")

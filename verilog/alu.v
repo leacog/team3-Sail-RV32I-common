@@ -132,23 +132,26 @@ module alu(ALUctl, A, B, ALUOut, Branch_Enable);
 			`ifdef ALU_XOR
 				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_XOR:	ALUOut = A ^ B;
 			`endif
-			/*
-			 *	CSRRW  only
-			 */
-			`ifdef ALU_CSRRW
-				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW:	ALUOut = A;
-			`endif
-			/*
-			 *	CSRRS only
-			 */
-			`ifdef ALU_CSRRS
-				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS:	ALUOut = A | B;
-			`endif
-			/*
-			 *	CSRRC only
-			 */
-			`ifdef ALU_CSRRC
-				`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC:	ALUOut = (~A) & B;
+			
+			`ifdef CSR_REG
+				/*
+				*	CSRRW  only
+				*/
+				`ifdef ALU_CSRRW
+					`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRW:	ALUOut = A;
+				`endif
+				/*
+				*	CSRRS only
+				*/
+				`ifdef ALU_CSRRS
+					`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRS:	ALUOut = A | B;
+				`endif
+				/*
+				*	CSRRC only
+				*/
+				`ifdef ALU_CSRRC
+					`kSAIL_MICROARCHITECTURE_ALUCTL_3to0_CSRRC:	ALUOut = (~A) & B;
+				`endif
 			`endif
 			/*
 			 *	Should never happen.

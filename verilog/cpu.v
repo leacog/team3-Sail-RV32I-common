@@ -107,7 +107,6 @@ module cpu(
 	wire			Auipc1;
 	wire			Fence_signal;
 	wire			CSRR_signal;
-	wire			CSRRI_signal;
 
 	/*
 	 *	Decode stage
@@ -120,7 +119,6 @@ module cpu(
 	wire [31:0]		RegB_mux_out;
 	wire [31:0]		RegA_AddrFwdFlush_mux_out;
 	wire [31:0]		RegB_AddrFwdFlush_mux_out;
-	wire [31:0]		rdValOut_CSR;
 	wire [3:0]		dataMem_sign_mask;
 
 	/*
@@ -270,44 +268,56 @@ module cpu(
 			.sign_mask(dataMem_sign_mask)
 		);
 
-	csr_file ControlAndStatus_registers(
-			.clk(clk),
-			.write(mem_wb_out[3]), //TODO
-			.wrAddr_CSR(mem_wb_out[116:105]),
-			.wrVal_CSR(mem_wb_out[35:4]),
-			.rdAddr_CSR(inst_mux_out[31:20]),
-			.rdVal_CSR(rdValOut_CSR)
-		);
+	
+	`ifdef CSR_REG
+		wire			CSRRI_signal;
+		wire [31:0]		rdValOut_CSR;
+		
+		csr_file ControlAndStatus_registers(
+				.clk(clk),
+				.write(mem_wb_out[3]), //TODO
+				.wrAddr_CSR(mem_wb_out[116:105]),
+				.wrVal_CSR(mem_wb_out[35:4]),
+				.rdAddr_CSR(inst_mux_out[31:20]),
+				.rdVal_CSR(rdValOut_CSR)
+			);
+		
+		mux2to1 RegA_mux(
+				.input0(regA_out),
+				.input1({27'b0, if_id_out[51:47]}),
+				.select(CSRRI_signal),
+				.out(RegA_mux_out)
+			);
 
-	mux2to1 RegA_mux(
-			.input0(regA_out),
-			.input1({27'b0, if_id_out[51:47]}),
-			.select(CSRRI_signal),
-			.out(RegA_mux_out)
-		);
+		mux2to1 RegB_mux(
+				.input0(regB_out),
+				.input1(rdValOut_CSR),
+				.select(CSRR_signal),
+				.out(RegB_mux_out)
+			);
 
-	mux2to1 RegB_mux(
-			.input0(regB_out),
-			.input1(rdValOut_CSR),
-			.select(CSRR_signal),
-			.out(RegB_mux_out)
-		);
+		mux2to1 RegA_AddrFwdFlush_mux( //TODO cleanup
+				.input0({27'b0, if_id_out[51:47]}),
+				.input1(32'b0),
+				.select(CSRRI_signal),
+				.out(RegA_AddrFwdFlush_mux_out)
+			);
 
-	mux2to1 RegA_AddrFwdFlush_mux( //TODO cleanup
-			.input0({27'b0, if_id_out[51:47]}),
-			.input1(32'b0),
-			.select(CSRRI_signal),
-			.out(RegA_AddrFwdFlush_mux_out)
-		);
+		mux2to1 RegB_AddrFwdFlush_mux( //TODO cleanup
+				.input0({27'b0, if_id_out[56:52]}),
+				.input1(32'b0),
+				.select(CSRR_signal),
+				.out(RegB_AddrFwdFlush_mux_out)
+			);
+		assign CSRRI_signal = CSRR_signal & (if_id_out[46]);
+	`else
+		assign RegA_mux_out = regA_out;
+		assign RegB_mux_out = regB_out;
+		assign RegA_AddrFwdFlush_mux_out = {27'b0, if_id_out[51:47]};
+		assign RegB_AddrFwdFlush_mux_out = {27'b0, if_id_out[56:52]};
+	`endif
 
-	mux2to1 RegB_AddrFwdFlush_mux( //TODO cleanup
-			.input0({27'b0, if_id_out[56:52]}),
-			.input1(32'b0),
-			.select(CSRR_signal),
-			.out(RegB_AddrFwdFlush_mux_out)
-		);
-
-	assign CSRRI_signal = CSRR_signal & (if_id_out[46]);
+	
 
 	//ID/EX Pipeline Register
 	id_ex id_ex_reg(

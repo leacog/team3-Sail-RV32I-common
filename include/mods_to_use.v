@@ -1,0 +1,1 @@
+`define USE_CPU_DSP_ADDERS 1'b1

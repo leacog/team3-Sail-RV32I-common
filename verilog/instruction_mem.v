@@ -40,7 +40,7 @@
  *	RISC-V instruction memory
  */
 
-`include "../include/mods_to_use.v"
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
 
 `ifdef USE_INSTRUCTION_MEM_BRAM
 
@@ -79,7 +79,7 @@ module instruction_memory(addr, out);
 	reg [31:0]		instruction_memory[0:2**12-1];
 
 	initial begin
-		$readmemh("verilog/program.hex",instruction_memory);
+		$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",instruction_memory);
 	end
 
 	assign out = instruction_memory[addr >> 2];

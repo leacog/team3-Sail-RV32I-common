@@ -36,9 +36,9 @@
 
 
 
-`include "sail-core/include/rv32i-defines.v"
-`include "sail-core/include/sail-core-defines.v"
-
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/rv32i-defines.v"
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/sail-core-defines.v"
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
 
 
 /*

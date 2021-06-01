@@ -40,7 +40,7 @@
  *	cpu top-level
  */
 
-`include "sail-core/include/mods_to_use.v"
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
 
 module cpu(
 			clk,

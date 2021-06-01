@@ -1,0 +1,1 @@
+`define USE_INSTRUCTION_MEM_BRAM 1'b1

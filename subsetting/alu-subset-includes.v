@@ -1,4 +1,3 @@
-`define ALU_LUI 1'b1
 `define ALU_AND 1'b1
 `define ALU_ADD 1'b1
 `define ALU_SUB 1'b1

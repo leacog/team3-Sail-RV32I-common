@@ -426,13 +426,13 @@ module cpu (
 
 	//Forwarding Unit
 	ForwardingUnit forwarding_unit(
-			.rs1(id_ex_out[160:156]),
-			.rs2(id_ex_out[165:161]),
+			.rs1(pre_id_ex_out[160:156]),
+			.rs2(pre_id_ex_out[165:161]),
 			.MEM_RegWriteAddr(ex_mem_out[142:138]),
 			.WB_RegWriteAddr(mem_wb_out[104:100]),
 			.MEM_RegWrite(ex_mem_out[2]),
 			.WB_RegWrite(mem_wb_out[2]),
-			.EX_CSRR_Addr(id_ex_out[177:166]),
+			.EX_CSRR_Addr(pre_id_ex_out[177:166]),
 			.MEM_CSRR_Addr(ex_mem_out[154:143]),
 			.WB_CSRR_Addr(mem_wb_out[116:105]),
 			.MEM_CSRR(ex_mem_out[3]),
@@ -444,14 +444,14 @@ module cpu (
 		);
 
 	mux2to1 mem_fwd1_mux(
-			.input0(id_ex_out[75:44]),
+			.input0(pre_id_ex_out[75:44]),
 			.input1(dataMemOut_fwd_mux_out),
 			.select(mfwd1),
 			.out(mem_fwd1_mux_out)
 		);
 
 	mux2to1 mem_fwd2_mux(
-			.input0(id_ex_out[107:76]),
+			.input0(pre_id_ex_out[107:76]),
 			.input1(dataMemOut_fwd_mux_out),
 			.select(mfwd2),
 			.out(mem_fwd2_mux_out)

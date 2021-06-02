@@ -273,10 +273,9 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 					state <= WRITE;
 				end
 			end
-
 			WRITE:begin
 				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
-				state <= WRITE;
+				state <= IDLE;
 				clk_stall <= 0;
 			end
 

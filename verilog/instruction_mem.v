@@ -43,10 +43,9 @@
 `include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
 
 `ifdef USE_INSTRUCTION_MEM_BRAM
-
+/*
 module instruction_memory_bram(addr, out, clk);
 	input clk;
-	reg new_read; 			//1 if new address in the line, 0 otherwise
 	reg[31:0] addr_buf;
 	input [31:0]		addr;
 	output reg [31:0]		out;
@@ -54,19 +53,33 @@ module instruction_memory_bram(addr, out, clk);
 	reg [31:0]		insmem[0:1023];
 	
 	initial begin
-		$readmemh("verilog/program.hex",insmem);
+		$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",insmem);
 	end
 	
 	always @(addr) begin
-		new_read = 1'b1;
 		addr_buf <= addr;
 	end
 
 	always @(negedge clk) begin
-		if (new_read==1'b1) begin
-			out <= insmem[addr_buf >> 2];
-			new_read <= 1'b0;
-		end
+		out <= insmem[addr_buf >> 2];
+	end
+endmodule
+*/
+
+module instruction_memory_bram(addr, out, clk);
+	input clk;
+	input [31:0]		addr;
+	output reg [31:0]		out;
+
+	reg [31:0]		insmem[0:1023];
+	
+	initial begin
+		$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",insmem);
+		out <= 32'h13;
+	end
+	
+	always @(posedge clk) begin
+		out <= insmem[addr >> 2];
 	end
 endmodule
 
@@ -76,7 +89,7 @@ module instruction_memory(addr, out);
 	input [31:0]		addr;
 	output [31:0]		out;
 
-	reg [31:0]		instruction_memory[0:2**12-1];
+	reg [31:0]		instruction_memory[0:1023];
 
 	initial begin
 		$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",instruction_memory);

@@ -101,6 +101,7 @@ module pre_ex (clk, data_in, data_out,clk_stall2);
 	integer state = 0;
 	parameter		IDLE = 0;
 	parameter		READ_BUFFER = 1;
+	parameter		WRITE_BUFFER = 1;
 	/*
 	 *	The `initial` statement below uses Yosys's support for nonzero
 	 *	initial values:
@@ -123,9 +124,13 @@ module pre_ex (clk, data_in, data_out,clk_stall2);
 				state <= READ_BUFFER;
 			end
 			READ_BUFFER:begin
+				clk_stall2 <=1 ;
+				state <= WRITE_BUFFER;
+				data_out <=data_in;
+			end
+			WRITE_BUFFER:begin
 				clk_stall2 <=0 ;
 				state <= IDLE;
-				data_out <=data_in;
 			end
 			
 		endcase

@@ -92,7 +92,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	Buffer to store address
 	 */
-	reg [31:0]		addr_buf;
+	wire [31:0]		addr_buf;
 
 	/*
 	 *	Sign_mask buffer
@@ -239,17 +239,19 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	State machine
 	 */
 
-	always @(addr,write_data,sign_mask)begin
-		write_data_buffer <= write_data;
-		addr_buf <= addr;
-		sign_mask_buf <= sign_mask;
-	end
+	
+
+	assign	addr_buf <= addr;
+
+
 
 	always @(posedge clk) begin
 		case (state)
 			IDLE: begin
+				write_data_buffer <= write_data;
 				memread_buf <= memread;
 				memwrite_buf <= memwrite;
+				sign_mask_buf <= sign_mask;
 				clk_stall <= 0;
 				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
 				if(memwrite==1'b1 || memread==1'b1) begin

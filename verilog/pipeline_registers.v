@@ -95,8 +95,8 @@ endmodule
 
 module pre_ex (clk, data_in, data_out);
 	input			clk;
-	input [239:0]		data_in;
-	output reg[239:0]	data_out;
+	input [241:0]		data_in;
+	output reg[241:0]	data_out;
 
 	/*
 	 *	The `initial` statement below uses Yosys's support for nonzero

@@ -71,7 +71,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	Line buffer
 	 */
-	reg [31:0]		word_buf_output;
+	wire [31:0]		word_buf_output;
 
 	/*
 	 *	Read buffer

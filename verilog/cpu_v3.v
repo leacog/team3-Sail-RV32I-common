@@ -324,11 +324,17 @@ module cpu (
 
 	wire[31:0] wb_fwd1_mux_out_pre;
 	wire[31:0] wb_fwd2_mux_out_pre;
+	wire[31:0] alu_result_pre;
+	wire	alu_branch_enable_pre;
 	pre_ex pre_ex_reg(
 		.clk(real_clk),
 		.clk_stall2(clk_stall2),
 		.data_in({pre_id_ex_out,wb_fwd1_mux_out,wb_fwd2_mux_out}),
-		.data_out({id_ex_out,wb_fwd1_mux_out_pre ,wb_fwd2_mux_out_pre})
+		.data_out({id_ex_out,wb_fwd1_mux_out_pre ,wb_fwd2_mux_out_pre}),
+		.alu_in(alu_result_pre),
+		.alu_out(alu_result),
+		.branch_in(alu_branch_enable_pre),
+		.branch_out(alu_branch_enable),
 	);
 
 	//Execute stage
@@ -363,8 +369,8 @@ module cpu (
 			.ALUctl(id_ex_out[146:140]),
 			.A(wb_fwd1_mux_out_pre),
 			.B(alu_mux_out),
-			.ALUOut(alu_result),
-			.Branch_Enable(alu_branch_enable)
+			.ALUOut(alu_result_pre),
+			.Branch_Enable(alu_branch_enable_pre)
 		);
 
 	mux2to1 lui_mux(

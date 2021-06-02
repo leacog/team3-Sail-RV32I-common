@@ -95,9 +95,13 @@ endmodule
 
 module pre_ex (clk, data_in, data_out,clk_stall2);
 	input			clk;
+	input	[31:0]		alu_in;
+	input				branch_in;
 	input [241:0]		data_in;
 	output reg[241:0]	data_out;
 	output reg clk_stall2;
+	output reg[31:0]	alu_out;
+	output reg			branch_out;
 	integer state = 0;
 	parameter		IDLE = 0;
 	parameter		READ_BUFFER = 1;
@@ -129,6 +133,8 @@ module pre_ex (clk, data_in, data_out,clk_stall2);
 				data_out <=data_in;
 			end
 			WRITE_BUFFER:begin
+				alu_out <= alu_in;
+				branch_out <= branch_in;
 				clk_stall2 <=0 ;
 				state <= IDLE;
 			end

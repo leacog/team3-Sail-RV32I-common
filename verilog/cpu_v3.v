@@ -53,13 +53,14 @@ module cpu (
 			data_mem_memread,
 			data_mem_sign_mask,
 			clk_stall2,
+			real_clk,
 		);
 	/*
 	 *	Input Clock
 	 */
 	input clk;
 	output clk_stall2;
-
+	input real_clk;
 	/*
 	 *	instruction memory input
 	 */
@@ -324,7 +325,7 @@ module cpu (
 	wire[31:0] wb_fwd1_mux_out_pre;
 	wire[31:0] wb_fwd2_mux_out_pre;
 	pre_ex pre_ex_reg(
-		.clk(clk),
+		.clk(real_clk),
 		.clk_stall2(clk_stall2),
 		.data_in({pre_id_ex_out,wb_fwd1_mux_out,wb_fwd2_mux_out}),
 		.data_out({id_ex_out,wb_fwd1_mux_out_pre ,wb_fwd2_mux_out_pre})

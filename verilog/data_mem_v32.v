@@ -229,10 +229,13 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	State machine
 	 */
 
-	reg[31:0]datain;
-	reg[3:0] br_mask;
+	wire [31:0]datain;
+	wire  [3:0] br_mask;
 	
+	assign datain <=(sign_mask[2:0]==3'b001)?{byte_r3, byte_r2, byte_r1, byte_r0}:((sign_mask[2:0]==3'b011)?{halfword_r1, halfword_r0}:write_data);
+	assign br_mask <= (sign_mask[2:0]==3'b001)? mask_byte :((sign_mask[2:0]==3'b011)? mask_half : 4'b1111);
 
+/*
 	always @(*)begin
 		case (sign_mask[2:0])
 					3'b001: begin //byte
@@ -252,6 +255,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 					end
 				endcase
 	end
+	*/
 
 	assign sign_mask_buf_input = sign_mask;
 	assign write_data_buffer = write_data;
@@ -266,7 +270,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 		if(memread_buf==1'b1)begin
 			addr_byte_offset_buf_read <= addr_buf[1:0];
 			sign_mask_buf <= sign_mask;
-			word_buf_output <= data_block[addr_buf_block_addr - 32'h1000 ];
+			word_buf_output <= data_block[addr_buf_block_addr  - 32'h1000 ];
 		end
 		else if(memwrite_buf==1'b1) begin
 			if (br_mask[3]) begin data_block[addr_buf_block_addr - 32'h1000][31:24] <= datain[31:24];end

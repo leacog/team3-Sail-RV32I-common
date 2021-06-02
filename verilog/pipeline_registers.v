@@ -109,7 +109,7 @@ module pre_ex (clk, data_in, data_out);
 	 *	modules in the design and to thereby set the values.
 	 */
 	initial begin
-		data_out = 178'b0;
+		data_out = 241'b0;
 	end
 
 	always @(posedge clk) begin

@@ -444,14 +444,14 @@ module cpu (
 		);
 
 	mux2to1 mem_fwd1_mux(
-			.input0(pre_id_ex_out[75:44]),
+			.input0(id_ex_out[75:44]),
 			.input1(dataMemOut_fwd_mux_out),
 			.select(mfwd1),
 			.out(mem_fwd1_mux_out)
 		);
 
 	mux2to1 mem_fwd2_mux(
-			.input0(pre_id_ex_out[107:76]),
+			.input0(id_ex_out[107:76]),
 			.input1(dataMemOut_fwd_mux_out),
 			.select(mfwd2),
 			.out(mem_fwd2_mux_out)

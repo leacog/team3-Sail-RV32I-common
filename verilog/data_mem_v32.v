@@ -71,7 +71,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	Line buffer
 	 */
-	wire [31:0]		word_buf_output;
+	reg [31:0]		word_buf_output;
 
 	/*
 	 *	Read buffer
@@ -233,16 +233,25 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	assign addr_buf = addr;
 	
 	always @(posedge clk) begin
-		if(memread_buf==1'b1)begin
-			addr_byte_offset_buf_read <= addr_buf[1:0];
-			sign_mask_buf <= sign_mask;
-			word_buf_output <= data_block[addr_buf_block_addr - 32'h1000];
-		end
-		else if(memwrite_buf==1'b1) begin
-			if (br_mask[3]) begin data_block[addr_buf_block_addr - 32'h1000][31:16] <= datain[31:16];end
-			if (br_mask[1]) begin data_block[addr_buf_block_addr - 32'h1000][15:8] <= datain[15:8];end
-			if (br_mask[0]) begin data_block[addr_buf_block_addr - 32'h1000][7:0] <= datain[7:0];end
-		end				
+	case (state)
+		IDLE:begin
+				clk_stall <= 0;
+				if(memread_buf==1'b1)begin
+					addr_byte_offset_buf_read <= addr_buf[1:0];
+					sign_mask_buf <= sign_mask;
+					word_buf_output <= data_block[addr_buf_block_addr - 32'h1000];
+					state<=READ;
+					clk_stall <= 1;
+				end
+				else if(memwrite_buf==1'b1) begin
+					if (br_mask[3]) begin data_block[addr_buf_block_addr - 32'h1000][31:16] <= datain[31:16];end
+					if (br_mask[1]) begin data_block[addr_buf_block_addr - 32'h1000][15:8] <= datain[15:8];end
+					if (br_mask[0]) begin data_block[addr_buf_block_addr - 32'h1000][7:0] <= datain[7:0];end
+				end	
+			end
+		READ:begin
+				clk_stall <= 0;
+			end
 	end
 
 	/*

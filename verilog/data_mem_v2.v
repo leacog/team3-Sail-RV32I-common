@@ -45,7 +45,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	input			memwrite;
 	input			memread;
 	input [3:0]		sign_mask;
-	output reg [31:0]	read_data;
+	output [31:0]	read_data;
 	output [7:0]		led;
 	output reg		clk_stall;	//Sets the clock high
 
@@ -92,7 +92,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	/*
 	 *	Buffer to store address
 	 */
-	wire [31:0]		addr_buf;
+	reg [31:0]		addr_buf;
 
 	/*
 	 *	Sign_mask buffer
@@ -240,9 +240,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 */
 
 	
-
-	assign	addr_buf = addr;
-
+	assign read_data = read_buf;
 
 
 	always @(posedge clk) begin
@@ -253,7 +251,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				memwrite_buf <= memwrite;
 				sign_mask_buf <= sign_mask;
 				clk_stall <= 0;
-				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
+				addr_buf <= addr;
 				if(memwrite==1'b1 || memread==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;
@@ -265,16 +263,21 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
+				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
+
 				if(memread_buf==1'b1) begin
-					read_data <= read_buf;
 					state <= IDLE;
 					clk_stall <= 0;
 				end
 				else if(memwrite_buf == 1'b1) begin
-					data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
-					state <= IDLE;
-					clk_stall <= 0;
+					state <= WRITE;
 				end
+			end
+
+			WRITE:begin
+				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
+				state <= WRITE;
+				clk_stall <= 0;
 			end
 
 		endcase

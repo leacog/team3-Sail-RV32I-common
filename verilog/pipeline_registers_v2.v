@@ -93,7 +93,7 @@ module id_ex (clk, data_in, data_out);
 	end
 endmodule
 
-module pre_ex (clk, data_in, data_out,clk_stall2);
+module pre_ex (clk, data_in, data_out,clk_stall2,alu_in,branch_in,alu_out,branch_out);
 	input			clk;
 	input	[31:0]		alu_in;
 	input				branch_in;

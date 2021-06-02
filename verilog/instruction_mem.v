@@ -75,7 +75,6 @@ module instruction_memory_bram(addr, out, clk);
 	
 	initial begin
 		$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",insmem);
-		out <= 32'h13;
 	end
 	
 	always @(posedge clk) begin

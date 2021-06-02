@@ -232,8 +232,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire [31:0]datain;
 	wire  [3:0] br_mask;
 	
-	assign datain <=(sign_mask[2:0]==3'b001)?{byte_r3, byte_r2, byte_r1, byte_r0}:((sign_mask[2:0]==3'b011)?{halfword_r1, halfword_r0}:write_data);
-	assign br_mask <= (sign_mask[2:0]==3'b001)? mask_byte :((sign_mask[2:0]==3'b011)? mask_half : 4'b1111);
+	assign datain =(sign_mask[2:0]==3'b001)?{byte_r3, byte_r2, byte_r1, byte_r0}:((sign_mask[2:0]==3'b011)?{halfword_r1, halfword_r0}:write_data);
+	assign br_mask = (sign_mask[2:0]==3'b001)? mask_byte :((sign_mask[2:0]==3'b011)? mask_half : 4'b1111);
 
 /*
 	always @(*)begin

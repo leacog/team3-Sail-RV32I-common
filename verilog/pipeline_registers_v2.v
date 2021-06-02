@@ -93,11 +93,14 @@ module id_ex (clk, data_in, data_out);
 	end
 endmodule
 
-module pre_ex (clk, data_in, data_out);
+module pre_ex (clk, data_in, data_out,clk_stall2);
 	input			clk;
 	input [241:0]		data_in;
 	output reg[241:0]	data_out;
-
+	output reg clk_stall2;
+	integer state = 0;
+	parameter		IDLE = 0;
+	parameter		READ_BUFFER = 1;
 	/*
 	 *	The `initial` statement below uses Yosys's support for nonzero
 	 *	initial values:
@@ -110,10 +113,22 @@ module pre_ex (clk, data_in, data_out);
 	 */
 	initial begin
 		data_out = 242'b0;
+		clk_stall2 <= IDLE;
 	end
 
 	always @(posedge clk) begin
-		data_out <= data_in;
+		case(state)
+			IDLE:begin
+				clk_stall2 <=1 ;
+				state <= READ_BUFFER;
+			end
+			READ_BUFFER:begin
+				clk_stall2 <=0 ;
+				state <= IDLE;
+				data_out <=data_in;
+			end
+			
+		endcase
 	end
 endmodule
 

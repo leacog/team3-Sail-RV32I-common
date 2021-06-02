@@ -51,12 +51,14 @@ module cpu (
 			data_mem_WrData,
 			data_mem_memwrite,
 			data_mem_memread,
-			data_mem_sign_mask
+			data_mem_sign_mask,
+			clk_stall2,
 		);
 	/*
 	 *	Input Clock
 	 */
 	input clk;
+	output clk_stall2;
 
 	/*
 	 *	instruction memory input
@@ -323,6 +325,7 @@ module cpu (
 	wire[31:0] wb_fwd2_mux_out_pre;
 	pre_ex pre_ex_reg(
 		.clk(clk),
+		.clk_stall2(clk_stall2),
 		.data_in({pre_id_ex_out,wb_fwd1_mux_out,wb_fwd2_mux_out}),
 		.data_out({id_ex_out,wb_fwd1_mux_out_pre ,wb_fwd2_mux_out_pre})
 	);
@@ -373,7 +376,7 @@ module cpu (
 	//EX/MEM Pipeline Register
 	ex_mem ex_mem_reg(
 			.clk(clk),
-			.data_in({id_ex_out[177:166], id_ex_out[155:151], wb_fwd2_mux_out, lui_result, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
+			.data_in({id_ex_out[177:166], id_ex_out[155:151], wb_fwd2_mux_out_pre, lui_result, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
 			.data_out(ex_mem_out)
 		);
 
@@ -426,13 +429,13 @@ module cpu (
 
 	//Forwarding Unit
 	ForwardingUnit forwarding_unit(
-			.rs1(pre_id_ex_out[160:156]),
-			.rs2(pre_id_ex_out[165:161]),
+			.rs1(id_ex_out[160:156]),
+			.rs2(id_ex_out[165:161]),
 			.MEM_RegWriteAddr(ex_mem_out[142:138]),
 			.WB_RegWriteAddr(mem_wb_out[104:100]),
 			.MEM_RegWrite(ex_mem_out[2]),
 			.WB_RegWrite(mem_wb_out[2]),
-			.EX_CSRR_Addr(pre_id_ex_out[177:166]),
+			.EX_CSRR_Addr(id_ex_out[177:166]),
 			.MEM_CSRR_Addr(ex_mem_out[154:143]),
 			.WB_CSRR_Addr(mem_wb_out[116:105]),
 			.MEM_CSRR(ex_mem_out[3]),

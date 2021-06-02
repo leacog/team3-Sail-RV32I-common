@@ -154,10 +154,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	assign byte_r2 = (bdec_sig2==1'b1)? write_data[7:0]:8'b00;
 	assign byte_r3 = (bdec_sig3==1'b1)? write_data[7:0]:8'b00;
 
-	assign mask_byte[0] = (bdec_sig0==1'b1)? 1'b1 :0'b0;
-	assign mask_byte[1] = (bdec_sig1==1'b1)? 1'b1 :0'b0;
-	assign mask_byte[2] = (bdec_sig2==1'b1)? 1'b1 :0'b0;
-	assign mask_byte[3] = (bdec_sig3==1'b1)? 1'b1 :0'b0;
+	assign mask_byte[0] = (bdec_sig0==1'b1)? 1'b1 :1'b0;
+	assign mask_byte[1] = (bdec_sig1==1'b1)? 1'b1 :1'b0;
+	assign mask_byte[2] = (bdec_sig2==1'b1)? 1'b1 :1'b0;
+	assign mask_byte[3] = (bdec_sig3==1'b1)? 1'b1 :1'b0;
 
 
 	//For write halfword

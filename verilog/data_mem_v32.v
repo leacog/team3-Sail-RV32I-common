@@ -251,6 +251,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 			end
 		READ:begin
 				clk_stall <= 0;
+				state<=IDLE;
 			end
 		endcase
 	end

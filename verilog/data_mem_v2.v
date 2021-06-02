@@ -84,10 +84,6 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	reg			memread_buf;
 	reg			memwrite_buf;
 
-	/*
-	 *	Buffers to store write data
-	 */
-	reg [31:0]		write_data_buffer;
 
 	/*
 	 *	Buffer to store address
@@ -130,6 +126,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	assign 			buf2	= word_buf[23:16];
 	assign 			buf3	= word_buf[31:24];
 
+	
 	/*
 	 *	Byte select decoder
 	 */
@@ -143,43 +140,29 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	assign bdec_sig2 = (addr_buf_byte_offset[1]) & (~addr_buf_byte_offset[0]);
 	assign bdec_sig3 = (addr_buf_byte_offset[1]) & (addr_buf_byte_offset[0]);
 
-
 	/*
-	 *	Constructing the word to be replaced for write byte
+	 *	Constructing the word to be replaced for write byte   
 	 */
+
 	wire[7:0] byte_r0;
 	wire[7:0] byte_r1;
 	wire[7:0] byte_r2;
 	wire[7:0] byte_r3;
- 
-	assign byte_r0 = (bdec_sig0==1'b1) ? write_data_buffer[7:0] : buf0;
-	assign byte_r1 = (bdec_sig1==1'b1) ? write_data_buffer[7:0] : buf1;
-	assign byte_r2 = (bdec_sig2==1'b1) ? write_data_buffer[7:0] : buf2;
-	assign byte_r3 = (bdec_sig3==1'b1) ? write_data_buffer[7:0] : buf3;
+
+	assign byte_r0 = (bdec_sig0==1'b1) ? write_data[7:0] : ((bdec_sig1==1'b1) ? write_data[15:8]:((bdec_sig2==1'b1)? write_data[23:16]:write_data[31:24]));
+	assign byte_r1 = (bdec_sig0==1'b1) ? write_data[15:8] : ((bdec_sig1==1'b1) ? write_data[23:16]:((bdec_sig2==1'b1)? write_data[31:24]:8'b00));
+	assign byte_r2 = (bdec_sig0==1'b1) ? write_data[23:16] : ((bdec_sig1==1'b1) ? write_data[31:24]:8'b00);
+	assign byte_r3 = (bdec_sig0==1'b1) ? write_data[31:24] : 8'b00;
 
 	/*
-	 *	For write halfword
+	 * sign mask and input data for block memory
 	 */
-	wire[15:0] halfword_r0;
-	wire[15:0] halfword_r1;
 
-	assign halfword_r0 = (addr_buf_byte_offset[1]==1'b1) ? {buf1, buf0} : write_data_buffer[15:0];
-	assign halfword_r1 = (addr_buf_byte_offset[1]==1'b1) ? write_data_buffer[15:0] : {buf3, buf2};
+	reg [31:0]     datain;
+	reg [3:0]		br_mask;
 
-	/* a is sign_mask_buf[2], b is sign_mask_buf[1], c is sign_mask_buf[0] */
-	wire write_select0;
-	wire write_select1;
 	
-	wire[31:0] write_out1;
-	wire[31:0] write_out2;
-	
-	assign write_select0 = ~sign_mask_buf[2] & sign_mask_buf[1];
-	assign write_select1 = sign_mask_buf[2];
-	
-	assign write_out1 = (write_select0) ? {halfword_r1, halfword_r0} : {byte_r3, byte_r2, byte_r1, byte_r0};
-	assign write_out2 = (write_select0) ? 32'b0 : write_data_buffer;
-	
-	assign replacement_word = (write_select1) ? write_out2 : write_out1;
+
 	/*
 	 *	Combinational logic for generating 32-bit read data
 	 */
@@ -252,6 +235,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				sign_mask_buf <= sign_mask;
 				clk_stall <= 0;
 				addr_buf <= addr;
+				datain <= {byte_r3,byte_r2,byte_r1,byte_r0};
+			    br_mask <= {{2{sign_mask[2]}},{1{sign_mask[1]}},{1{sign_mask[0]}}};
 				if(memwrite==1'b1 || memread==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;
@@ -263,21 +248,21 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				 *	Subtract out the size of the instruction memory.
 				 *	(Bad practice: The constant should be a `define).
 				 */
-				word_buf <= data_block[addr_buf_block_addr - 32'h1000];
 
 				if(memread_buf==1'b1) begin
+					word_buf <= data_block[addr_buf_block_addr - 32'h1000];
 					state <= IDLE;
 					clk_stall <= 0;
 				end
 				else if(memwrite_buf == 1'b1) begin
-					state <= WRITE;
+					if (br_mask[3]) begin data_block[block_addr][31:16] <= datain[31:16];end
+					if (br_mask[1]) begin data_block[block_addr][15:8] <= datain[15:8];end
+					if (br_mask[0]) begin data_block[block_addr][7:0] <= datain[7:0];end					
+					state <= IDLE;
+					clk_stall <=0;
 				end
 			end
-			WRITE:begin
-				data_block[addr_buf_block_addr - 32'h1000] <= replacement_word;
-				state <= IDLE;
-				clk_stall <= 0;
-			end
+		
 
 		endcase
 	end

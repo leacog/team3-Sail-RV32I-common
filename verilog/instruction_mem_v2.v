@@ -49,7 +49,7 @@ module instruction_memory_bram(addr, out, clk);
 	reg [31:0]		insmem[0:1023];
 	
 	initial begin
-		$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",insmem);
+		$readmemh("verilog/program.hex",insmem);
 	end
 	
 	always @(posedge clk) begin

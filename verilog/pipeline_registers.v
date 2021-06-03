@@ -40,32 +40,61 @@
  *	Pipeline registers
  */
 
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
 
 
 /* IF/ID pipeline registers */ 
-module if_id (clk, data_in, data_out);
-	input			clk;
-	input [63:0]		data_in;
-	output reg[63:0]	data_out;
+`ifdef USE_INSTRUCTION_MEM_BRAM
 
-	/*
-	 *	This uses Yosys's support for nonzero initial values:
-	 *
-	 *		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
-	 *
-	 *	Rather than using this simulation construct (`initial`),
-	 *	the design should instead use a reset signal going to
-	 *	modules in the design.
-	 */
-	initial begin
-		data_out = 64'b0;
-	end
+	module if_id (clk, data_in, data_out);
+		input			clk;
+		input [31:0]		data_in;
+		output reg[31:0]	data_out;
 
-	always @(posedge clk) begin
-		data_out <= data_in;
-	end
-endmodule
+		/*
+		*	This uses Yosys's support for nonzero initial values:
+		*
+		*		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
+		*
+		*	Rather than using this simulation construct (`initial`),
+		*	the design should instead use a reset signal going to
+		*	modules in the design.
+		*/
+		initial begin
+			data_out = 32'b0;
+		end
 
+		always @(posedge clk) begin
+			data_out <= data_in;
+		end
+	endmodule
+
+`else
+
+	module if_id (clk, data_in, data_out);
+		input			clk;
+		input [63:0]		data_in;
+		output reg[63:0]	data_out;
+
+		/*
+		*	This uses Yosys's support for nonzero initial values:
+		*
+		*		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
+		*
+		*	Rather than using this simulation construct (`initial`),
+		*	the design should instead use a reset signal going to
+		*	modules in the design.
+		*/
+		initial begin
+			data_out = 64'b0;
+		end
+
+		always @(posedge clk) begin
+			data_out <= data_in;
+		end
+	endmodule
+
+`endif
 
 
 /* ID/EX pipeline registers */ 

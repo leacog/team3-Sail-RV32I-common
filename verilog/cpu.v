@@ -222,11 +222,27 @@ module cpu(
 	/*
 	 *	IF/ID Pipeline Register
 	 */
-	if_id if_id_reg(
-			.clk(clk),
-			.data_in({inst_mux_out, pc_out}),
-			.data_out(if_id_out)
-		);
+	
+	`ifdef USE_INSTRUCTION_MEM_BRAM
+	
+		wire[31:0] if_id_out_reduced;
+		if_id if_id_reg(
+				.clk(clk),
+				.data_in(pc_out),
+				.data_out(if_id_out_reduced)
+			);
+		assign if_id_out = {inst_mux_out, if_id_out_reduced};
+	
+	`else
+
+		if_id if_id_reg(
+				.clk(clk),
+				.data_in({inst_mux_out, pc_out}),
+				.data_out(if_id_out)
+			);
+	
+	`endif 
+
 
 	/*
 	 *	Decode Stage

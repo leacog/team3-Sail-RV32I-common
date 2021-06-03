@@ -171,7 +171,6 @@ module cpu (
 	wire			mistake_trigger;
 	wire			decode_ctrl_mux_sel;
 	wire			inst_mux_sel;
-	reg				inst_mux_sel_buf;
 
 	/*
 	 *	Instruction Fetch Stage
@@ -195,14 +194,10 @@ module cpu (
 			.clk(clk)
 		);
 
-	always @(posedge clk)begin
-		inst_mux_sel_buf <= inst_mux_sel;
-	end
-
 	mux2to1 inst_mux(
 			.input0(inst_mem_out),
 			.input1(32'b0),
-			.select(inst_mux_sel_buf),
+			.select(inst_mux_sel),
 			.out(inst_mux_out)
 		);
 
@@ -216,15 +211,12 @@ module cpu (
 	/*
 	 *	IF/ID Pipeline Register
 	 */
-	 wire [31:0] if_id_out_pre;
-	 wire [31:0] spare;
 	if_id if_id_reg(
 			.clk(clk),
-			.data_in({pc_out,32'b00}),
-			.data_out({if_id_out_pre,spare})
+			.data_in({inst_mux_out, pc_out}),
+			.data_out(if_id_out)
 		);
 
-		assign if_id_out= {inst_mux_out,if_id_out_pre};
 	/*
 	 *	Decode Stage
 	 */
@@ -515,7 +507,7 @@ module cpu (
 	assign inst_mux_sel = pcsrc | predict | mistake_trigger | Fence_signal;
 
 	//Instruction Memory Connections
-	assign inst_mem_in = pc_out;
+	assign inst_mem_in = pc_in;
 
 	//Data Memory Connections
 	assign data_mem_addr = lui_result;

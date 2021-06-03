@@ -78,7 +78,7 @@ module top (led);
 	wire[31:0]	lui_mux_out;
 
 
-	cpu_v2 processor(
+	cpu processor(
 		.clk(clk_proc),
 		.inst_mem_in(inst_in),
 		.inst_mem_out(inst_out),

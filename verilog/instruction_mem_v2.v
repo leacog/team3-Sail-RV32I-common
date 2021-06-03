@@ -50,7 +50,7 @@ module instruction_memory(addr, out, clk);
 	
 	initial begin
 		$readmemh("verilog/program.hex",insmem);
-		#5 out = insmem[32'b0];
+		$readmemh("verilog/program.hex",out);
 	end
 	
 	always @(posedge clk) begin

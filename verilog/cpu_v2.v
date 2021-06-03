@@ -172,6 +172,10 @@ module cpu (
 	wire			decode_ctrl_mux_sel;
 	wire			inst_mux_sel;
 
+
+	initial begin
+		pc_in = 32'b0;
+	end
 	/*
 	 *	Instruction Fetch Stage
 	 */

@@ -40,39 +40,39 @@
  *	RISC-V instruction memory
  */
 
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
 
+`ifdef USE_INSTRUCTION_MEM_BRAM
 
-module instruction_memory(addr, out);
-	input [31:0]		addr;
-	output [31:0]		out;
+	module instruction_memory_bram(addr, out, clk);
+		input clk;
+		input [31:0]		addr;
+		output reg [31:0]		out;
 
-	/*
-	 *	Size the instruction memory.
-	 *
-	 *	(Bad practice: The constant should be a `define).
-	 */
-	reg [31:0]		instruction_memory[0:2**12-1];
+		reg [31:0]		insmem[0:1023];
+		
+		initial begin
+			$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",insmem);
+		end
+		
+		always @(posedge clk) begin
+			out <= insmem[addr >> 2];
+		end
+	endmodule
 
-	/*
-	 *	According to the "iCE40 SPRAM Usage Guide" (TN1314 Version 1.0), page 5:
-	 *
-	 *		"SB_SPRAM256KA RAM does not support initialization through device configuration."
-	 *
-	 *	The only way to have an initializable memory is to use the Block RAM.
-	 *	This uses Yosys's support for nonzero initial values:
-	 *
-	 *		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
-	 *
-	 *	Rather than using this simulation construct (`initial`),
-	 *	the design should instead use a reset signal going to
-	 *	modules in the design.
-	 */
-	initial begin
-		/*
-		 *	read from "program.hex" and store the instructions in instruction memory
-		 */
-		$readmemh("verilog/program.hex",instruction_memory);
-	end
+`else
 
-	assign out = instruction_memory[addr >> 2];
-endmodule
+	module instruction_memory(addr, out);
+		input [31:0]		addr;
+		output [31:0]		out;
+
+		reg [31:0]		instruction_memory[0:1023];
+
+		initial begin
+			$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",instruction_memory);
+		end
+
+		assign out = instruction_memory[addr >> 2];
+	endmodule
+	
+`endif

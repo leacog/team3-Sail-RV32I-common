@@ -42,6 +42,12 @@
  *		This module implements the control and status registers (CSRs).
  */
 
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
+`ifdef USE_SUBSETTING
+	`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/alu-subset-includes.v"
+`else
+	`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/full-isa-includes.v"
+`endif
 
 `ifdef CSR_REG
 module csr_file (clk, write, wrAddr_CSR, wrVal_CSR, rdAddr_CSR, rdVal_CSR);

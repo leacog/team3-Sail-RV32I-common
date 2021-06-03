@@ -229,7 +229,7 @@ module data_mem (clk, write_data, memwrite, memread, sign_mask, read_data, led, 
 			.select(lui_mux_sl_buf),
 			.out(lui_mux_out)
 		);
-	assign addr = lui_mux_out
+	assign addr = lui_mux_out;
 	assign addr_buf = addr; 
 
 	/*

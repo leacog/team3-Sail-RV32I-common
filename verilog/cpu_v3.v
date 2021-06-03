@@ -323,14 +323,14 @@ module cpu (
 	//pre-EX stage
 
 	wire[31:0] wb_fwd1_mux_out_pre;
-	wire[31:0] wb_fwd2_mux_out_pre;
+	wire[31:0] alu_mux_out_pre;
 	wire[31:0] alu_result_pre;
 	wire	alu_branch_enable_pre;
 	pre_ex pre_ex_reg(
 		.clk(real_clk),
 		.clk_stall2(clk_stall2),
-		.data_in({pre_id_ex_out,wb_fwd1_mux_out,wb_fwd2_mux_out}),
-		.data_out({id_ex_out,wb_fwd1_mux_out_pre ,wb_fwd2_mux_out_pre}),
+		.data_in({pre_id_ex_out,wb_fwd1_mux_out,alu_mux_out_pre}),
+		.data_out({id_ex_out,wb_fwd1_mux_out_pre ,alu_mux_out}),
 		.alu_in(alu_result_pre),
 		.alu_out(alu_result),
 		.branch_in(alu_branch_enable_pre),
@@ -359,10 +359,10 @@ module cpu (
 		);
 
 	mux2to1 alu_mux(
-			.input0(wb_fwd2_mux_out_pre),
-			.input1(id_ex_out[139:108]),
-			.select(id_ex_out[10]),
-			.out(alu_mux_out)
+			.input0(wb_fwd2_mux_out),
+			.input1(pre_id_ex_out[139:108]),
+			.select(pre_id_ex_out[10]),
+			.out(alu_mux_out_pre)
 		);
 
 	alu alu_main(
@@ -383,7 +383,7 @@ module cpu (
 	//EX/MEM Pipeline Register
 	ex_mem ex_mem_reg(
 			.clk(clk),
-			.data_in({id_ex_out[177:166], id_ex_out[155:151], wb_fwd2_mux_out_pre, lui_result, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
+			.data_in({id_ex_out[177:166], id_ex_out[155:151], wb_fwd2_mux_out, lui_result, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
 			.data_out(ex_mem_out)
 		);
 

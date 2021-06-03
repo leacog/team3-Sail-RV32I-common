@@ -171,6 +171,7 @@ module cpu (
 	wire			mistake_trigger;
 	wire			decode_ctrl_mux_sel;
 	wire			inst_mux_sel;
+	reg				inst_mux_sel_buf;
 
 	/*
 	 *	Instruction Fetch Stage
@@ -194,10 +195,14 @@ module cpu (
 			.clk(clk)
 		);
 
+	always @(posedge clk)begin
+		inst_mux_sel_buf <= inst_mux_sel;
+	end
+
 	mux2to1 inst_mux(
 			.input0(inst_mem_out),
 			.input1(32'b0),
-			.select(inst_mux_sel),
+			.select(inst_mux_sel_buf),
 			.out(inst_mux_out)
 		);
 

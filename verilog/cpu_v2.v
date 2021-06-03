@@ -42,7 +42,7 @@
 
 
 
-module cpu_v2(
+module cpu (
 			clk,
 			inst_mem_in,
 			inst_mem_out,
@@ -211,12 +211,15 @@ module cpu_v2(
 	/*
 	 *	IF/ID Pipeline Register
 	 */
+	 wire [31:0] if_id_out_pre;
+	 wire [31:0] spare;
 	if_id if_id_reg(
 			.clk(clk),
-			.data_in({inst_mux_out, pc_out}),
-			.data_out(if_id_out)
+			.data_in({pc_out,32'b00}),
+			.data_out({if_id_out_pre,spare})
 		);
 
+		assign if_id_out= {inst_mux_out,if_id_out_pre};
 	/*
 	 *	Decode Stage
 	 */

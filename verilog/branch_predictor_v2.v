@@ -85,7 +85,10 @@ module branch_predictor(
 	 *	modules in the design and to thereby set the values.
 	 */
 	initial begin
-		s = 4096'b00;
+		integer i;
+		for (i = 0; i < 2048; i = i + 1) begin
+			s[i] = 2'b00;
+		end
 		branch_mem_sig_reg = 1'b0;
 	end
 

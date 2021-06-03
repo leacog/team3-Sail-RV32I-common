@@ -372,7 +372,7 @@ module cpu (
 	ex_mem ex_mem_reg(
 			.clk(clk),
 			.data_in({id_ex_out[177:166], id_ex_out[155:151], wb_fwd2_mux_out, alu_branch_enable, addr_adder_sum, id_ex_out[43:12], ex_cont_mux_out[8:0]}),
-			.data_out(ex_mem_out1,ex_mem_out2)
+			.data_out({ex_mem_out1,ex_mem_out2})
 		);
 
 	assign ex_mem_out ={ex_mem_out1,lui_result,ex_mem_out2};

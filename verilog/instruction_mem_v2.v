@@ -41,7 +41,7 @@
  */
 
 
-module instruction_memory_bram(addr, out, clk);
+module instruction_memory(addr, out, clk);
 	input clk;
 	input [31:0]		addr;
 	output reg [31:0]		out;

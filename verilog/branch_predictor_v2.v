@@ -100,8 +100,8 @@ module branch_predictor(
 	 */
 	always @(posedge clk) begin
 		if (branch_mem_sig_reg) begin
-			s[in_addr][1] <= (s[1]&s[0]) | (s[0]&actual_branch_decision) | (s[1]&actual_branch_decision);
-			s[in_addr][0] <= (s[1]&(!s[0])) | ((!s[0])&actual_branch_decision) | (s[1]&actual_branch_decision);
+			s[in_addr][1] <= (s[in_addr][1]&s[in_addr][0]) | (s[in_addr][0]&actual_branch_decision) | (s[in_addr][1]&actual_branch_decision);
+			s[in_addr][0] <= (s[in_addr][1]&(!s[in_addr][0])) | ((!s[in_addr][0])&actual_branch_decision) | (s[in_addr][1]&actual_branch_decision);
 		end
 	end
 

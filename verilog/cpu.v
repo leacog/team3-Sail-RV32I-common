@@ -40,7 +40,12 @@
  *	cpu top-level
  */
 
-
+`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mods_to_use.v"
+`ifdef USE_SUBSETTING
+	`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/alu-subset-includes.v"
+`else
+	`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/full-isa-includes.v"
+`endif
 
 module cpu(
 			clk,
@@ -180,11 +185,19 @@ module cpu(
 			.out(pc_in)
 		);
 
-	adder pc_adder(
-			.input1(32'b100),
-			.input2(pc_out),
-			.out(pc_adder_out)
-		);
+	`ifdef USE_CPU_DSP_ADDERS
+		DSPadder pc_adder(
+				.input1(32'b100),
+				.input2(pc_out),
+				.out(pc_adder_out)
+			);
+	`else
+		adder pc_adder(
+				.input1(32'b100),
+				.input2(pc_out),
+				.out(pc_adder_out)
+			);	
+	`endif
 
 	program_counter PC(
 			.inAddr(pc_in),
@@ -309,6 +322,7 @@ module cpu(
 				.select(CSRR_signal),
 				.out(RegB_AddrFwdFlush_mux_out)
 			);
+
 		assign CSRRI_signal = CSRR_signal & (if_id_out[46]);
 	`else
 		assign RegA_mux_out = regA_out;
@@ -340,12 +354,20 @@ module cpu(
 			.select(id_ex_out[11]),
 			.out(addr_adder_mux_out)
 		);
-
-	adder addr_adder(
-			.input1(addr_adder_mux_out),
-			.input2(id_ex_out[139:108]),
-			.out(addr_adder_sum)
-		);
+		
+	`ifdef USE_CPU_DSP_ADDERS
+		DSPadder addr_adder(
+				.input1(addr_adder_mux_out),
+				.input2(id_ex_out[139:108]),
+				.out(addr_adder_sum)
+			);
+	`else
+		adder addr_adder(
+				.input1(addr_adder_mux_out),
+				.input2(id_ex_out[139:108]),
+				.out(addr_adder_sum)
+			);
+	`endif
 
 	mux2to1 alu_mux(
 			.input0(wb_fwd2_mux_out),

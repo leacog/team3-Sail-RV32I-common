@@ -72,6 +72,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	Line buffer
 	 */
 	reg [31:0]		word_buf;
+	reg [31:0]      write_data_buf;
 
 	/*
 	 *	Read buffer
@@ -149,10 +150,10 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire[7:0] byte_r2;
 	wire[7:0] byte_r3;
 	wire[3:0] mask_byte;
-	assign byte_r0 = (bdec_sig0==1'b1)? write_data[7:0]:8'b00;
-	assign byte_r1 = (bdec_sig1==1'b1)? write_data[7:0]:8'b00;
-	assign byte_r2 = (bdec_sig2==1'b1)? write_data[7:0]:8'b00;
-	assign byte_r3 = (bdec_sig3==1'b1)? write_data[7:0]:8'b00;
+	assign byte_r0 = (bdec_sig0==1'b1)? write_data_buf[7:0]:8'b00;
+	assign byte_r1 = (bdec_sig1==1'b1)? write_data_buf[7:0]:8'b00;
+	assign byte_r2 = (bdec_sig2==1'b1)? write_data_buf[7:0]:8'b00;
+	assign byte_r3 = (bdec_sig3==1'b1)? write_data_buf[7:0]:8'b00;
 
 	assign mask_byte[0] = (bdec_sig0==1'b1)? 1'b1 :1'b0;
 	assign mask_byte[1] = (bdec_sig1==1'b1)? 1'b1 :1'b0;
@@ -164,8 +165,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	wire[15:0] halfword_r0;
 	wire[15:0] halfword_r1;
 	wire[3:0] mask_half;
-	assign halfword_r0 = (addr_buf_byte_offset[1]==1'b1)?{8'b00, 8'b00}:write_data[15:0];
-	assign halfword_r1 = (addr_buf_byte_offset[1]==1'b1)? write_data[15:0]:{8'b00, 8'b00}; 
+	assign halfword_r0 = (addr_buf_byte_offset[1]==1'b1)?{8'b00, 8'b00}:write_data_buf[15:0];
+	assign halfword_r1 = (addr_buf_byte_offset[1]==1'b1)? write_data_buf[15:0]:{8'b00, 8'b00}; 
 	assign mask_half[1:0]= (addr_buf_byte_offset[1]==1'b1)?{2'b00}:{2'b11};
 	assign mask_half[3:2]= (addr_buf_byte_offset[1]==1'b1)?{2'b11}:{2'b00}; 
 	
@@ -174,8 +175,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 * sign mask and input data for block memory
 	 */
 
-	reg [31:0]     datain;
-	reg [3:0]		br_mask;
+	wire [31:0]     datain;
+	wire [3:0]		br_mask;  
 
 	
 
@@ -238,7 +239,8 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 	 *	State machine
 	 */
 
-	
+	assign datain =(sign_mask_buf[2:0]==3'b001)?{byte_r3, byte_r2, byte_r1, byte_r0}:((sign_mask_buf[2:0]==3'b011)?{halfword_r1, halfword_r0}:write_data_buf);
+	assign br_mask = (sign_mask_buf[2:0]==3'b001)? mask_byte :((sign_mask_buf[2:0]==3'b011)? mask_half : 4'b1111);
 	assign read_data = read_buf;
 
 
@@ -250,25 +252,7 @@ module data_mem (clk, addr, write_data, memwrite, memread, sign_mask, read_data,
 				sign_mask_buf <= sign_mask;
 				clk_stall <= 0;
 				addr_buf <= addr;
-				case (sign_mask[2:0])
-					3'b001: begin //byte
-						datain <= {byte_r3, byte_r2, byte_r1, byte_r0};
-						br_mask <= mask_byte;
-					end
-					3'b011: begin //halfword
-						datain <= {halfword_r1, halfword_r0};
-						br_mask <= mask_half;
-					end
-					3'b111: begin //word
-						datain <= write_data;
-						br_mask <= 4'b1111;
-					end
-					default: begin
-						//do nothing
-					end
-				endcase
-
-
+				write_data_buf <= write_data;
 				if(memwrite==1'b1 || memread==1'b1) begin
 					state <= READ_WRITE_BUFFER;
 					clk_stall <= 1;

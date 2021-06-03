@@ -84,8 +84,9 @@ module branch_predictor(
 	 *	the design should instead use a reset signal going to
 	 *	modules in the design and to thereby set the values.
 	 */
+	integer i;
 	initial begin
-		integer i;
+		
 		for (i = 0; i < 2048; i = i + 1) begin
 			s[i] = 2'b00;
 		end

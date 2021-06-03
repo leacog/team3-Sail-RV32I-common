@@ -542,7 +542,11 @@ module cpu(
 	assign inst_mux_sel = pcsrc | predict | mistake_trigger | Fence_signal;
 
 	//Instruction Memory Connections
-	assign inst_mem_in = pc_in;
+	`ifdef USE_INSTRUCTION_MEM_BRAM
+		assign inst_mem_in = pc_in;
+	`else
+		assign inst_mem_in = pc_out;
+	`endif 
 
 	//Data Memory Connections
 	assign data_mem_addr = lui_result;

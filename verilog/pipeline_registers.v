@@ -135,15 +135,15 @@ endmodule
 		end
 	endmodule
 `else
-	module mem_wb (clk, data_in, data_out);
+	module mem_wb (clk, data_in, data_out2, data_out1);
 			input			clk;
 			input [116:0]		data_in;
-			output reg[3:0]	data_out1;
+			output reg[3:0]		data_out1;
 			output reg[80:0]	data_out2;
 
 			initial begin
 				data_out1 = 4'b0;
-				data_out2 = 85'b0;
+				data_out2 = 81'b0;
 			end
 
 			always @(posedge clk) begin

@@ -44,23 +44,21 @@
 module instruction_memory(addr, out, clk);
 	input clk;
 	input [31:0]		addr;
-	output reg [31:0]		out;
+	output [31:0]		out;
 
 	reg [31:0]		insmem[0:1023];
-	reg [31:0]		start_add;
-	reg star;
-	wire [31:0]		addr_r;
+	reg [31:0]		r_out;
+	reg				star;
 	
 	initial begin
 		$readmemh("verilog/program.hex",insmem);
-		start_add <= 31'b0;
 		star <= 0;
 	end
 	
-	assign addr_r = (star == 0)? start_add : addr;
+	assign out = (star == 0)?  insmem[32'b0] : r_out;
 
 	always @(posedge clk) begin
-		out = insmem[addr_r >> 2];
+		r_out = insmem[addr >> 2];
 		star = 1;
 	end
 endmodule

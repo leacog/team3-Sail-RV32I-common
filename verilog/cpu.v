@@ -211,14 +211,16 @@ module cpu(
 			.select(inst_mux_sel),
 			.out(inst_mux_out)
 		);
-
-	mux2to1 fence_mux(
+	`ifdef FENCE_INSTR
+		mux2to1 fence_mux(
 			.input0(pc_adder_out),
 			.input1(pc_out),
 			.select(Fence_signal),
 			.out(fence_mux_out)
 		);
-
+	`else	
+		assign fence_mux_out = pc_adder_out;
+	`endif
 	/*
 	 *	IF/ID Pipeline Register
 	 */
@@ -427,11 +429,20 @@ module cpu(
 		);
 
 	//MEM/WB Pipeline Register
-	mem_wb mem_wb_reg(
+	`ifdef CSR_REG
+		mem_wb mem_wb_reg(
 			.clk(clk),
 			.data_in({ex_mem_out[154:143], ex_mem_out[142:138], data_mem_out, mem_csrr_mux_out, ex_mem_out[105:74], ex_mem_out[3:0]}),
 			.data_out(mem_wb_out)
 		);
+	`else
+		mem_wb mem_wb_reg(
+			.clk(clk),
+			.data_in({ex_mem_out[154:143], ex_mem_out[142:138], data_mem_out, mem_csrr_mux_out, ex_mem_out[105:74], ex_mem_out[3:0]}),
+			.data_out1(mem_wb_out[3:1]),
+			.data_out2(mem_wb_out[116:36])
+		);
+	`endif
 
 	//Writeback to Register Stage
 	mux2to1 wb_mux(

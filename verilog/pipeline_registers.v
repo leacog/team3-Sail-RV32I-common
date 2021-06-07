@@ -122,26 +122,33 @@ endmodule
 
 
 /* MEM/WB pipeline registers */ 
-module mem_wb (clk, data_in, data_out);
-	input			clk;
-	input [116:0]		data_in;
-	output reg[116:0]	data_out;
+`ifdef CSR_REG
+	module mem_wb (clk, data_in, data_out);
+		input			clk;
+		input [116:0]		data_in;
+		output reg[116:0]	data_out;
+		initial begin
+			data_out = 117'b0;
+		end
+		always @(posedge clk) begin
+			data_out <= data_in;
+		end
+	endmodule
+`else
+	module mem_wb (clk, data_in, data_out);
+			input			clk;
+			input [116:0]		data_in;
+			output reg[3:0]	data_out1;
+			output reg[80:0]	data_out2;
 
-	/*
-	 *	The `initial` statement below uses Yosys's support for nonzero
-	 *	initial values:
-	 *
-	 *		https://github.com/YosysHQ/yosys/commit/0793f1b196df536975a044a4ce53025c81d00c7f
-	 *
-	 *	Rather than using this simulation construct (`initial`),
-	 *	the design should instead use a reset signal going to
-	 *	modules in the design and to thereby set the values.
-	 */
-	initial begin
-		data_out = 117'b0;
-	end
+			initial begin
+				data_out1 = 4'b0;
+				data_out2 = 85'b0;
+			end
 
-	always @(posedge clk) begin
-		data_out <= data_in;
-	end
-endmodule
+			always @(posedge clk) begin
+				data_out1 <= data_in[3:0];
+				data_out2 <= data_in[116:36];
+			end
+		endmodule	
+`endif

@@ -10,7 +10,7 @@ with open('RV32I_bitmasks.csv', newline='') as csvfile:
         instruction_list.append(instruction_code) # Kinda stupid but coverts types correctly
 
 #Loads all instructions used by the program
-with open('bsort_blink.hex', newline='') as programfile:
+with open('../../programs/program.hex', newline='') as programfile:
     inread = programfile.readlines()
     for instruction in inread:   
         if(len(instruction) > 4): #Remove potential empty lines at end of file

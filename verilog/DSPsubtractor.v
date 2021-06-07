@@ -59,7 +59,7 @@ module DSPsubtractor(input1, input2, out, carry); // out = input1 - input2
 		.C(input1[31:16]),
 		.D(input1[15:0]),
 		.O(out),
-		.CLK(), 							// Clock not connected - asynchronus operation for now
+		.CLK(1'b0), 							// Clock not connected - asynchronus operation for now
 		.CE(1'b0), 							// Clock disabled
 		.IRSTTOP(1'b0),					// Reset for input and output accumulators - not in use
 		.IRSTBOT(1'b0),	

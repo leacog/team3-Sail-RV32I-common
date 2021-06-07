@@ -211,7 +211,7 @@
 		*	modules in the design.
 		*/
 		initial begin
-			$readmemh("verilog/data.hex", data_block);
+			$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/verilog/data.hex", data_block);
 		end
 
 		/*
@@ -467,7 +467,7 @@
 		*	modules in the design.
 		*/
 		initial begin
-			$readmemh("verilog/data.hex", data_block);
+			$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/verilog/data.hex", data_block);
 			clk_stall = 0;
 		end
 

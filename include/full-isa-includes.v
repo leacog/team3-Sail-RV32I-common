@@ -17,4 +17,5 @@
 `define ALU_BLTU 1'b1
 `define ALU_BGEU 1'b1
 `define CSR_REG 1'b1
+`define CSR_REG_2 1'b1
 `define FENCE_INSTR 1'b1

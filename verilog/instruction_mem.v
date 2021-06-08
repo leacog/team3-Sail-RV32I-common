@@ -47,26 +47,18 @@
 	module instruction_memory_bram(addr, out, clk);
 		input clk;
 		input [31:0]		addr;
-		output [31:0] out;
-		reg [31:0] out_mem;
-		reg [31:0] out_start = 32'h13;	
-		reg running = 0;
+		output reg [31:0] out;
 
 		reg [31:0]		insmem[0:1023];
 
 		initial begin
 			$readmemh("/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/programs/program.hex",insmem);
-			out_start = 32'h13;
-		       	running = 0;	
 		end
 		
 		always @(posedge clk) begin
-			out_mem <= insmem[addr >> 2];
-			running <= 1;
+			out <= insmem[addr >> 2];
 		end
 		
-		assign out = (running) ? out_mem : out_start; 
-
 	endmodule
 
 `else

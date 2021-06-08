@@ -429,7 +429,7 @@ module cpu(
 		);
 
 	//MEM/WB Pipeline Register
-	`ifdef CSR_REG
+	`ifdef CSR_REG_2
 		mem_wb mem_wb_reg(
 			.clk(clk),
 			.data_in({ex_mem_out[154:143], ex_mem_out[142:138], data_mem_out, mem_csrr_mux_out, ex_mem_out[105:74], ex_mem_out[3:0]}),

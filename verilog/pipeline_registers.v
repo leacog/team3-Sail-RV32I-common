@@ -122,7 +122,7 @@ endmodule
 
 
 /* MEM/WB pipeline registers */ 
-`ifdef CSR_REG
+`ifdef CSR_REG_2
 	module mem_wb (clk, data_in, data_out);
 		input			clk;
 		input [116:0]		data_in;

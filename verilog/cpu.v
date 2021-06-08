@@ -49,6 +49,8 @@
 
 module cpu(
 			clk,
+			reset,
+			main_clk,
 			inst_mem_in,
 			inst_mem_out,
 			data_mem_out,
@@ -62,7 +64,8 @@ module cpu(
 	 *	Input Clock
 	 */
 	input clk;
-
+	input main_clk;
+	input reset;
 	/*
 	 *	instruction memory input
 	 */
@@ -200,9 +203,10 @@ module cpu(
 	`endif
 
 	program_counter PC(
+			.reset(reset),
 			.inAddr(pc_in),
 			.outAddr(pc_out),
-			.clk(clk)
+			.clk(main_clk)
 		);
 
 	mux2to1 inst_mux(

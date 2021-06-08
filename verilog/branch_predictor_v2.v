@@ -70,7 +70,7 @@ module branch_predictor(
 	/*
 	 *	internal state
 	 */
-	reg[2047:0]	s[1:0];
+	reg[1023:0]	s[1:0];
 
 	reg		branch_mem_sig_reg;
 
@@ -87,7 +87,7 @@ module branch_predictor(
 	integer i;
 	initial begin
 		
-		for (i = 0; i < 2048; i = i + 1) begin
+		for (i = 0; i < 1024; i = i + 1) begin
 			s[i] = 2'b00;
 		end
 		branch_mem_sig_reg = 1'b0;

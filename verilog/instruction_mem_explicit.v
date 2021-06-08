@@ -44,18 +44,11 @@
 
 `ifdef USE_INSTRUCTION_MEM_BRAM
 
-	module instruction_memory_bram(addr_in, out, clk, reset);
+	module instruction_memory_bram(addr, out, clk);
 		input clk;
-		input reset; 				//Active high reset
-		input [31:0] addr_in;
-		wire [31:0] read_addr;
+		input [31:0] addr;
 		output [31:0] out;
 		
-		if (!reset) begin 
-			assign read_addr = 32'b0;
-		end else begin
-			assign read_addr = addr_in;
-		end
 		
 		SB_RAM1024x4 mem_cell_1 (
 			.RDATA(out[3:0]),
@@ -66,12 +59,11 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
-
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_1_params.v"
-		
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_1_params.v"
+		defparam mem_cell_1.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program1.hex";
+	
 		SB_RAM1024x4 mem_cell_2 (
 			.RDATA(out[7:4]),
 			.RADDR(addr[11:2]),
@@ -81,12 +73,12 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
 
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_2_params.v"
-		
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_2_params.v"
+		defparam mem_cell_2.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program2.hex";
+
 		SB_RAM1024x4 mem_cell_3 (
 			.RDATA(out[11:8]),
 			.RADDR(addr[11:2]),
@@ -96,12 +88,12 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
 
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_3_params.v"
-				
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_3_params.v"
+		defparam mem_cell_3.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program3.hex";
+
 		SB_RAM1024x4 mem_cell_4 (
 			.RDATA(out[15:12]),
 			.RADDR(addr[11:2]),
@@ -111,11 +103,11 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
 
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_4_params.v"
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_4_params.v"
+		defparam mem_cell_4.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program4.hex";
 
 		SB_RAM1024x4 mem_cell_5 (
 			.RDATA(out[19:16]),
@@ -126,11 +118,11 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
 
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_5_params.v"
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_5_params.v"
+		defparam mem_cell_5.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program5.hex";
 
 		SB_RAM1024x4 mem_cell_6 (
 			.RDATA(out[23:20]),
@@ -141,11 +133,11 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
 
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_6_params.v"
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_6_params.v"
+		defparam mem_cell_6.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program6.hex";
 
 		SB_RAM1024x4 mem_cell_7 (
 			.RDATA(out[27:24]),
@@ -156,11 +148,11 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
 
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_7_params.v"
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_7_params.v"
+		defparam mem_cell_7.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program7.hex";
 
 		SB_RAM1024x4 mem_cell_8 (
 			.RDATA(out[31:28]),
@@ -171,12 +163,12 @@
 			.WADDR(10'b0),
 			.WCLK(1'b0),
 			.WCLKE(1'b0),
-			.WDATA(4'b0),
 			.WE(1'b0)
 		);
 
-		`include "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_8_params.v"
-					
+		`include "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_8_params.v"
+		defparam mem_cell_8.INIT_FILE = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/program8.hex";
+
 	endmodule
 
 `else

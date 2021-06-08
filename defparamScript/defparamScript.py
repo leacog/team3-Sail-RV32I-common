@@ -8,7 +8,7 @@ instructions = instructions[0:1024]
 
 for i in range(8):
   hexStrings = ["","","","","","","","","","","","","","","",""]
-  filename = "home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cells/mem_cell_" + str(8-i) + "_params.v"
+  filename = "/home/students/mec77/team3-f-of-e-tools/verilog/hardware/processor/sail-core/include/mem_cells/mem_cell_" + str(8-i) + "_params.v"
   outfile = open(filename, "w")
   for idx, instruction in enumerate(instructions):
     stringIdx = int(idx/64)

@@ -44,9 +44,8 @@
 
 
 
-module program_counter(inAddr, outAddr, clk, reset);
+module program_counter(inAddr, outAddr, clk);
 	input			clk;
-	input 		reset;
 	input [31:0]		inAddr;
 	output reg[31:0]	outAddr;
 	/*
@@ -61,11 +60,9 @@ module program_counter(inAddr, outAddr, clk, reset);
 	initial begin
 		outAddr = 32'b0;
 	end
+
 	always @(posedge clk) begin
-		if(reset) begin
-			outAddr <= 32'b0;
-		end else begin
 			outAddr <= inAddr;
-		end
 	end
+
 endmodule
